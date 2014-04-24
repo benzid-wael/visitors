@@ -1,0 +1,6 @@
+*~
+*.orig
+*.DS_Store
+secrets.sls
+*.sw[po]
+

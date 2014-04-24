@@ -45,7 +45,7 @@ struct vih {
 	int endt;
 	int processed;
 	int invalid;
-        int blacklisted;
+	int blacklisted;
 	int hour[24];
 	int weekday[7];
 	int weekdayhour[7][24]; /* hour and weekday combined data */
@@ -61,7 +61,7 @@ struct vih {
 	struct hashtable referersage;
 	struct hashtable date;
 	struct hashtable googledate;
-        struct hashtable adsensed;
+	struct hashtable adsensed;
 	struct hashtable month;
 	struct hashtable googlemonth;
 	struct hashtable agents;
@@ -74,9 +74,9 @@ struct vih {
 	struct hashtable os;
 	struct hashtable browsers;
 	struct hashtable robots;
-        struct hashtable googlehumanlanguage;
-        struct hashtable screenres;
-        struct hashtable screendepth;
+	struct hashtable googlehumanlanguage;
+	struct hashtable screenres;
+	struct hashtable screendepth;
 	char *error;
 };
 
@@ -125,8 +125,8 @@ struct vistring {
 #define VI_PATTERNTYPE_GREP 0
 #define VI_PATTERNTYPE_EXCLUDE 1
 struct greppat {
-    int type;
-    char *pattern;
+	int type;
+	char *pattern;
 };
 
 /* ---------------------- global configuration parameters ------------------- */
@@ -181,7 +181,7 @@ struct vistring Config_prefix[VI_PREFIXES_MAX];
 
 /* Grep/Exclude array */
 struct greppat Config_grep_pattern[VI_GREP_PATTERNS_MAX];
-int Config_grep_pattern_num = 0;    /* number of set patterns */
+int Config_grep_pattern_num = 0;	/* number of set patterns */
 
 /*----------------------------------- Tables ---------------------------------*/
 static char *vi_wdname[7] = {"Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"};
@@ -196,21 +196,21 @@ void vi_tail(int filec, char **filev);
 /*------------------- Options parsing help functions ------------------------ */
 void ConfigAddGrepPattern(char *pattern, int type)
 {
-    char *s;
-    int len = strlen(pattern);
+	char *s;
+	int len = strlen(pattern);
 
-    if (Config_grep_pattern_num == VI_GREP_PATTERNS_MAX) {
-        fprintf(stderr, "Too many grep/exclude options specified\n");
-        exit(1);
-    }
-    s = malloc(strlen(pattern)+3);
-    s[0] = '*';
-    memcpy(s+1, pattern, len);
-    s[len+1] = '*';
-    s[len+2] = '\0';
-    Config_grep_pattern[Config_grep_pattern_num].type = type;
-    Config_grep_pattern[Config_grep_pattern_num].pattern = s;
-    Config_grep_pattern_num++;
+	if (Config_grep_pattern_num == VI_GREP_PATTERNS_MAX) {
+		fprintf(stderr, "Too many grep/exclude options specified\n");
+		exit(1);
+	}
+	s = malloc(strlen(pattern)+3);
+	s[0] = '*';
+	memcpy(s+1, pattern, len);
+	s[len+1] = '*';
+	s[len+2] = '\0';
+	Config_grep_pattern[Config_grep_pattern_num].type = type;
+	Config_grep_pattern[Config_grep_pattern_num].pattern = s;
+	Config_grep_pattern_num++;
 }
 
 /*------------------------------ support functions -------------------------- */
@@ -225,45 +225,45 @@ int vi_is_google_link(char *s)
 /* Returns non-zero if the user agent appears to be the GoogleBot. */
 int vi_is_googlebot_agent(char *agent) {
 	if (strstr(agent, "Googlebot") ||
-            strstr(agent, "googlebot")) return 1;
-        return 0;
+			strstr(agent, "googlebot")) return 1;
+	return 0;
 }
 
 /* Returns non-zero if the user agent appears to be the Mediapartners-Google. */
 int vi_is_adsensebot_agent(char *agent) {
 	if (strstr(agent, "Mediapartners-Google")) return 1;
-        return 0;
+	return 0;
 }
 
 int vi_is_yahoobot_agent(char *agent) {
-        if (strstr(agent, "Yahoo! Slurp")) return 1;
-        return 0;
+	if (strstr(agent, "Yahoo! Slurp")) return 1;
+	return 0;
 }
 
 int vi_is_msbot_agent(char *agent) {
-        if (strstr(agent, "msn.com/msnbot.htm")) return 1;
-        return 0;
+	if (strstr(agent, "msn.com/msnbot.htm")) return 1;
+	return 0;
 }
 
 /* Try to guess if a given agent string is about a crawler/bot
  * of some time. This function MUST be conservative, because
  * false negatives are acceptable while false positives arent. */
 int vi_is_genericbot_agent(char *agent) {
-        if (strstr(agent, "crawler") ||
-            strstr(agent, "Crawler") ||
-            strstr(agent, "bot/") ||
-            strstr(agent, "Bot/") ||
-            strstr(agent, "bot.htm") ||
-            strstr(agent, "+http://")) return 1;
-        return 0;
+	if (strstr(agent, "crawler") ||
+		strstr(agent, "Crawler") ||
+		strstr(agent, "bot/") ||
+		strstr(agent, "Bot/") ||
+		strstr(agent, "bot.htm") ||
+		strstr(agent, "+http://")) return 1;
+	return 0;
 }
 
 int vi_is_bot_agent(char *agent) {
-    if (vi_is_googlebot_agent(agent) ||
-        vi_is_adsensebot_agent(agent) ||
-        vi_is_yahoobot_agent(agent) ||
-        vi_is_msbot_agent(agent)) return 1;
-    return 0;
+	if (vi_is_googlebot_agent(agent) ||
+		vi_is_adsensebot_agent(agent) ||
+		vi_is_yahoobot_agent(agent) ||
+		vi_is_msbot_agent(agent)) return 1;
+	return 0;
 }
 
 /* Returns non-zero if the url matches some user-specified prefix.
@@ -279,8 +279,8 @@ int vi_is_internal_link(char *url)
 	l = strlen(url);
 	for (i = 0; i < Config_prefix_num; i++) {
 		if (Config_prefix[i].len <= l &&
-		    !strncasecmp(url, Config_prefix[i].str,
-			    Config_prefix[i].len))
+			!strncasecmp(url, Config_prefix[i].str,
+				Config_prefix[i].len))
 		{
 			return Config_prefix[i].len;
 		}
@@ -296,21 +296,21 @@ int vi_is_image(char *s)
 
 	if (l < 5) return 0;
 	if (!memcmp(end-4, ".css", 4) || 
-	    !memcmp(end-4, ".jpg", 4) || 
-	    !memcmp(end-4, ".gif", 4) ||
-	    !memcmp(end-4, ".png", 4) ||
-	    !memcmp(end-4, ".ico", 4) ||
-	    !memcmp(end-4, ".swf", 4) ||
-	    !memcmp(end-3, ".js", 3) ||
-	    !memcmp(end-5, ".jpeg", 5) ||
-	    !memcmp(end-4, ".CSS", 4) ||
-	    !memcmp(end-4, ".JPG", 4) ||
-	    !memcmp(end-4, ".GIF", 4) ||
-	    !memcmp(end-4, ".PNG", 4) ||
-	    !memcmp(end-4, ".ICO", 4) ||
-	    !memcmp(end-4, ".SWF", 4) ||
-	    !memcmp(end-3, ".JS", 3) ||
-	    !memcmp(end-5, ".JPEG", 5)) return 1;
+		!memcmp(end-4, ".jpg", 4) || 
+		!memcmp(end-4, ".gif", 4) ||
+		!memcmp(end-4, ".png", 4) ||
+		!memcmp(end-4, ".ico", 4) ||
+		!memcmp(end-4, ".swf", 4) ||
+		!memcmp(end-3, ".js", 3) ||
+		!memcmp(end-5, ".jpeg", 5) ||
+		!memcmp(end-4, ".CSS", 4) ||
+		!memcmp(end-4, ".JPG", 4) ||
+		!memcmp(end-4, ".GIF", 4) ||
+		!memcmp(end-4, ".PNG", 4) ||
+		!memcmp(end-4, ".ICO", 4) ||
+		!memcmp(end-4, ".SWF", 4) ||
+		!memcmp(end-3, ".JS", 3) ||
+		!memcmp(end-5, ".JPEG", 5)) return 1;
 	return 0;
 }
 
@@ -323,28 +323,28 @@ int vi_is_pageview(char *s)
 
 	if (s[l-1] == '/') return 1;
 	if (l >= 6 &&
-	    (!memcmp(end-5, ".html", 5) || 
-	    !memcmp(end-4, ".htm", 4) || 
-	    !memcmp(end-4, ".php", 4) ||
-	    !memcmp(end-4, ".asp", 4) ||
-	    !memcmp(end-4, ".jsp", 4) ||
-	    !memcmp(end-4, ".xdl", 4) ||
-	    !memcmp(end-5, ".xhtml", 5) ||
-	    !memcmp(end-4, ".xml", 4) ||
-	    !memcmp(end-4, ".cgi", 4) ||
-	    !memcmp(end-3, ".pl", 3) ||
-	    !memcmp(end-6, ".shtml", 6) ||
-	    !memcmp(end-5, ".HTML", 5) || 
-	    !memcmp(end-4, ".HTM", 4) || 
-	    !memcmp(end-4, ".PHP", 4) ||
-	    !memcmp(end-4, ".ASP", 4) ||
-	    !memcmp(end-4, ".JSP", 4) ||
-	    !memcmp(end-4, ".XDL", 4) ||
-	    !memcmp(end-6, ".XHTML", 6) ||
-	    !memcmp(end-4, ".XML", 4) ||
-	    !memcmp(end-4, ".CGI", 4) ||
-	    !memcmp(end-3, ".PL", 3) ||
-	    !memcmp(end-6, ".SHTML", 6))) return 1;
+		(!memcmp(end-5, ".html", 5) || 
+		!memcmp(end-4, ".htm", 4) || 
+		!memcmp(end-4, ".php", 4) ||
+		!memcmp(end-4, ".asp", 4) ||
+		!memcmp(end-4, ".jsp", 4) ||
+		!memcmp(end-4, ".xdl", 4) ||
+		!memcmp(end-5, ".xhtml", 5) ||
+		!memcmp(end-4, ".xml", 4) ||
+		!memcmp(end-4, ".cgi", 4) ||
+		!memcmp(end-3, ".pl", 3) ||
+		!memcmp(end-6, ".shtml", 6) ||
+		!memcmp(end-5, ".HTML", 5) || 
+		!memcmp(end-4, ".HTM", 4) || 
+		!memcmp(end-4, ".PHP", 4) ||
+		!memcmp(end-4, ".ASP", 4) ||
+		!memcmp(end-4, ".JSP", 4) ||
+		!memcmp(end-4, ".XDL", 4) ||
+		!memcmp(end-6, ".XHTML", 6) ||
+		!memcmp(end-4, ".XML", 4) ||
+		!memcmp(end-4, ".CGI", 4) ||
+		!memcmp(end-3, ".PL", 3) ||
+		!memcmp(end-6, ".SHTML", 6))) return 1;
 	dot = strrchr(s, '.');
 	if (!dot) return 1;
 	slash = strrchr(s, '/');
@@ -447,8 +447,9 @@ time_t parse_date(char *s, struct tm *tmptr)
 	if (tmptr) {
 		struct tm *auxtm;
 
-		if ((auxtm = localtime(&t)) != NULL)
+		if ((auxtm = localtime(&t)) != NULL){
 			*tmptr = *auxtm;
+		}
 	}
 	return t;
 
@@ -463,8 +464,9 @@ int vi_is_weekend(char *s)
 	struct tm tm;
 
 	if (parse_date(s, &tm) != (time_t)-1) {
-		if (tm.tm_wday == 0 || tm.tm_wday == 6)
+		if (tm.tm_wday == 0 || tm.tm_wday == 6){
 			return 1;
+		}
 	}
 	return 0;
 }
@@ -499,11 +501,17 @@ void vi_urldecode(char *d, char *s, int n)
 				  int high = toupper(*(s+1));
 				  int low = toupper(*(s+2));
 
-				  if (high <= '9') high -= '0';
-				  else high = (high - 'A') + 10;
-				  if (low <= '9') low -= '0';
-				  else low = (low - 'A') + 10;
-				  c = (high << 4)+low;
+				  if (high <= '9'){
+				    high -= '0';
+				  } else {
+				    high = (high - 'A') + 10;
+				  }
+				  if (low <= '9'){
+				    low -= '0';
+				  } else {
+				    low = (low - 'A') + 10;
+				  }
+				  c = (high << 4) + low;
 				  s += 2;
 			  }
 			  break;
@@ -534,8 +542,8 @@ void vi_urlencode(char *d, char *s, int n)
 	while(*s && n > 0) {
 		int c = *s;
 		if ((c >= 'A' && c <= 'Z') ||
-		    (c >= 'a' && c <= 'z') ||
-		    (c >= '0' && c <= '9'))
+			(c >= 'a' && c <= 'z') ||
+			(c >= '0' && c <= '9'))
 		{
 			*d++ = c;
 			n--;
@@ -578,52 +586,54 @@ void vi_strtolower(char *s)
  * Originally under the BSD license. */
 int vi_strlcpy(char *dst, char *src, int siz)
 {
-        char *d = dst;
-        const char *s = src;
-        int n = siz;
+		char *d = dst;
+		const char *s = src;
+		int n = siz;
 
-        /* Copy as many bytes as will fit */
-        if (n != 0 && --n != 0) {
-                do {
-                        if ((*d++ = *s++) == 0)
-                                break;
-                } while (--n != 0);
-        }
-        /* Not enough room in dst, add NUL and traverse rest of src */
-        if (n == 0) {
-                if (siz != 0)
-                        *d = '\0';              /* NUL-terminate dst */
-                while (*s++)
-                        ;
-        }
-        return(s - src - 1);    /* count does not include NUL */
+		/* Copy as many bytes as will fit */
+		if (n != 0 && --n != 0) {
+				do {
+						if ((*d++ = *s++) == 0)
+								break;
+				} while (--n != 0);
+		}
+		/* Not enough room in dst, add NUL and traverse rest of src */
+		if (n == 0) {
+				if (siz != 0)
+						*d = '\0';			  /* NUL-terminate dst */
+				while (*s++)
+						;
+		}
+		return(s - src - 1);	/* count does not include NUL */
 }
 
 int vi_strlcat(char *dst, const char *src, int siz)
 {
-        char *d = dst;
-        const char *s = src;
-        size_t n = siz;
-        size_t dlen;
+		char *d = dst;
+		const char *s = src;
+		size_t n = siz;
+		size_t dlen;
 
-        /* Find the end of dst and adjust bytes left but don't go past end */
-        while (n-- != 0 && *d != '\0')
-                d++;
-        dlen = d - dst;
-        n = siz - dlen;
+		/* Find the end of dst and adjust bytes left but don't go past end */
+		while (n-- != 0 && *d != '\0'){
+			d++;
+		}
+		dlen = d - dst;
+		n = siz - dlen;
 
-        if (n == 0)
-                return(dlen + strlen(s));
-        while (*s != '\0') {
-                if (n != 1) {
-                        *d++ = *s;
-                        n--;
-                }
-                s++;
-        }
-        *d = '\0';
+		if (n == 0){
+			return(dlen + strlen(s));
+		}
+		while (*s != '\0') {
+			if (n != 1) {
+				*d++ = *s;
+				n--;
+			}
+			s++;
+		}
+		*d = '\0';
 
-        return(dlen + (s - src));       /* count does not include NUL */
+		return(dlen + (s - src));	   /* count does not include NUL */
 }
 
 /* Returns non-zero if the url matches one of the keywords in
@@ -632,146 +642,146 @@ int vi_strlcat(char *dst, const char *src, int siz)
  * very slow. */
 int vi_is_blacklisted_url(struct vih *vih, char *url)
 {
-    unsigned int i;
+	unsigned int i;
 
-    for (i = 0; i < VI_BLACKLIST_LEN; i++) {
-        if (strstr(url, vi_blacklist[i])) {
-            vih->blacklisted++;
-            return 1;
-        }
-    }
-    return 0;
+	for (i = 0; i < VI_BLACKLIST_LEN; i++) {
+		if (strstr(url, vi_blacklist[i])) {
+			vih->blacklisted++;
+			return 1;
+		}
+	}
+	return 0;
 }
 
 /* Glob-style pattern matching. */
 int vi_match_len(const char *pattern, int patternLen,
-        const char *string, int stringLen, int nocase)
+		const char *string, int stringLen, int nocase)
 {
-    while(patternLen) {
-        switch(pattern[0]) {
-        case '*':
-            while (pattern[1] == '*') {
-                pattern++;
-                patternLen--;
-            }
-            if (patternLen == 1)
-                return 1; /* match */
-            while(stringLen) {
-                if (vi_match_len(pattern+1, patternLen-1,
-                            string, stringLen, nocase))
-                    return 1; /* match */
-                string++;
-                stringLen--;
-            }
-            return 0; /* no match */
-            break;
-        case '?':
-            if (stringLen == 0)
-                return 0; /* no match */
-            string++;
-            stringLen--;
-            break;
-        case '[':
-        {
-            int not, match;
+	while(patternLen) {
+		switch(pattern[0]) {
+		case '*':
+			while (pattern[1] == '*') {
+				pattern++;
+				patternLen--;
+			}
+			if (patternLen == 1)
+				return 1; /* match */
+			while(stringLen) {
+				if (vi_match_len(pattern+1, patternLen-1,
+							string, stringLen, nocase))
+					return 1; /* match */
+				string++;
+				stringLen--;
+			}
+			return 0; /* no match */
+			break;
+		case '?':
+			if (stringLen == 0)
+				return 0; /* no match */
+			string++;
+			stringLen--;
+			break;
+		case '[':
+		{
+			int not, match;
 
-            pattern++;
-            patternLen--;
-            not = pattern[0] == '^';
-            if (not) {
-                pattern++;
-                patternLen--;
-            }
-            match = 0;
-            while(1) {
-                if (pattern[0] == '\\') {
-                    pattern++;
-                    patternLen--;
-                    if (pattern[0] == string[0])
-                        match = 1;
-                } else if (pattern[0] == ']') {
-                    break;
-                } else if (patternLen == 0) {
-                    pattern--;
-                    patternLen++;
-                    break;
-                } else if (pattern[1] == '-' && patternLen >= 3) {
-                    int start = pattern[0];
-                    int end = pattern[2];
-                    int c = string[0];
-                    if (start > end) {
-                        int t = start;
-                        start = end;
-                        end = t;
-                    }
-                    if (nocase) {
-                        start = tolower(start);
-                        end = tolower(end);
-                        c = tolower(c);
-                    }
-                    pattern += 2;
-                    patternLen -= 2;
-                    if (c >= start && c <= end)
-                        match = 1;
-                } else {
-                    if (!nocase) {
-                        if (pattern[0] == string[0])
-                            match = 1;
-                    } else {
-                        if (tolower((int)pattern[0]) == tolower((int)string[0]))
-                            match = 1;
-                    }
-                }
-                pattern++;
-                patternLen--;
-            }
-            if (not)
-                match = !match;
-            if (!match)
-                return 0; /* no match */
-            string++;
-            stringLen--;
-            break;
-        }
-        case '\\':
-            if (patternLen >= 2) {
-                pattern++;
-                patternLen--;
-            }
-            /* fall through */
-        default:
-            if (!nocase) {
-                if (pattern[0] != string[0])
-                    return 0; /* no match */
-            } else {
-                if (tolower((int)pattern[0]) != tolower((int)string[0]))
-                    return 0; /* no match */
-            }
-            string++;
-            stringLen--;
-            break;
-        }
-        pattern++;
-        patternLen--;
-        if (stringLen == 0) {
-            while(*pattern == '*') {
-                pattern++;
-                patternLen--;
-            }
-            break;
-        }
-    }
-    if (patternLen == 0 && stringLen == 0)
-        return 1;
-    return 0;
+			pattern++;
+			patternLen--;
+			not = pattern[0] == '^';
+			if (not) {
+				pattern++;
+				patternLen--;
+			}
+			match = 0;
+			while(1) {
+				if (pattern[0] == '\\') {
+					pattern++;
+					patternLen--;
+					if (pattern[0] == string[0])
+						match = 1;
+				} else if (pattern[0] == ']') {
+					break;
+				} else if (patternLen == 0) {
+					pattern--;
+					patternLen++;
+					break;
+				} else if (pattern[1] == '-' && patternLen >= 3) {
+					int start = pattern[0];
+					int end = pattern[2];
+					int c = string[0];
+					if (start > end) {
+						int t = start;
+						start = end;
+						end = t;
+					}
+					if (nocase) {
+						start = tolower(start);
+						end = tolower(end);
+						c = tolower(c);
+					}
+					pattern += 2;
+					patternLen -= 2;
+					if (c >= start && c <= end)
+						match = 1;
+				} else {
+					if (!nocase) {
+						if (pattern[0] == string[0])
+							match = 1;
+					} else {
+						if (tolower((int)pattern[0]) == tolower((int)string[0]))
+							match = 1;
+					}
+				}
+				pattern++;
+				patternLen--;
+			}
+			if (not)
+				match = !match;
+			if (!match)
+				return 0; /* no match */
+			string++;
+			stringLen--;
+			break;
+		}
+		case '\\':
+			if (patternLen >= 2) {
+				pattern++;
+				patternLen--;
+			}
+			/* fall through */
+		default:
+			if (!nocase) {
+				if (pattern[0] != string[0])
+					return 0; /* no match */
+			} else {
+				if (tolower((int)pattern[0]) != tolower((int)string[0]))
+					return 0; /* no match */
+			}
+			string++;
+			stringLen--;
+			break;
+		}
+		pattern++;
+		patternLen--;
+		if (stringLen == 0) {
+			while(*pattern == '*') {
+				pattern++;
+				patternLen--;
+			}
+			break;
+		}
+	}
+	if (patternLen == 0 && stringLen == 0)
+		return 1;
+	return 0;
 }
 
 /* Like vi_match_len but more handly if used against nul-term strings. */
 int vi_match(const char *pattern, const char *string, int nocase)
 {
-    int patternLen = strlen(pattern);
-    int stringLen = strlen(string);
-    return vi_match_len(pattern, patternLen, string, stringLen, nocase);
+	int patternLen = strlen(pattern);
+	int stringLen = strlen(string);
+	return vi_match_len(pattern, patternLen, string, stringLen, nocase);
 }
 
 /*-------------------------- visitors handler functions --------------------- */
@@ -795,10 +805,14 @@ void vi_reset_combined_maps(struct vih *vih)
 		for (j = 0; j < 7; j++)
 			vih->weekdayhour[j][i] = 0;
 	}
-	for (i = 0; i < 7; i++) vih->weekday[i] = 0;
-	for (i = 0; i < 31; i++)
-		for (j = 0; j < 12; j++)
+	for (i = 0; i < 7; i++){
+		vih->weekday[i] = 0;
+	}
+	for (i = 0; i < 31; i++){
+		for (j = 0; j < 12; j++){
 			vih->monthday[j][i] = 0;
+		}
+	}
 }
 
 /* Reset the hashtables from the handler, that are left
@@ -856,7 +870,7 @@ struct vih *vi_new(void)
 	vih->startt = vih->endt = time(NULL);
 	vih->processed = 0;
 	vih->invalid = 0;
-        vih->blacklisted = 0;
+	vih->blacklisted = 0;
 	vi_reset_combined_maps(vih);
 	vih->error = NULL;
 	vi_ht_init(&vih->visitors);
@@ -941,7 +955,7 @@ int vi_counter_val(struct hashtable *ht, char *key)
 	unsigned int idx;
 	int r;
 	long val;
-	
+
 	r = ht_search(ht, key, &idx);
 	if (r == HT_NOTFOUND) {
 		return 0;
@@ -1058,7 +1072,7 @@ int vi_parse_line(struct logline *ll, char *l)
 {
 	char *date, *hour, *timezone, *host, *agent, *req, *ref, *p;
 	char *agent_start = NULL, *req_end = NULL, *ref_end = NULL;
-        int agent_without_parens = 0;
+	int agent_without_parens = 0;
 
 	/* Seek the start of the different components */
 
@@ -1069,42 +1083,42 @@ int vi_parse_line(struct logline *ll, char *l)
 	date++;
 	/* Identify user-agent start char. */
 	if ((agent = strchr(l, '(')) == NULL) {
-                /* Bad... user agent without (...) string, makes
-                 * the detection a bit slower and guessworkish. */
+		/* Bad... user agent without (...) string, makes
+		 * the detection a bit slower and guessworkish. */
 
-                /* Check if the count of '"' chars in the string
-                 * is equal to six. If so, it's very likely that the
-                 * last field inside "" is the User Agent string, so
-                 * we get it. */
-                char *aux = l, *last = NULL;
-                int count = 0;
-               
-                /* Count '"' chars, save the last occurence found. */
-                while (*aux) {
-                    if (*aux == '"') {
-                        count++;
-                        last = aux;
-                    }
-                    aux++;
-                }
+		/* Check if the count of '"' chars in the string
+		 * is equal to six. If so, it's very likely that the
+		 * last field inside "" is the User Agent string, so
+		 * we get it. */
+		char *aux = l, *last = NULL;
+		int count = 0;
 
-                if (count == 6) {
-                    /* Ok! it seems like Combined log format.
-                     * Set a flag and get it later when the
-                     * rest of the log file is splitted. Now it's
-                     * too early to add \0 chars inside the line. */
-                    agent_without_parens = 1;
-                    agent_start = last-1;
-                    while(*agent_start != '"')
-                        agent_start--;
-                } else {
-                    /* No way... no user agent detected in this line. */
-		    agent = "";
-                }
+		/* Count '"' chars, save the last occurence found. */
+		while (*aux) {
+			if (*aux == '"') {
+				count++;
+				last = aux;
+			}
+			aux++;
+		}
+
+		if (count == 6) {
+			/* Ok! it seems like Combined log format.
+			 * Set a flag and get it later when the
+			 * rest of the log file is splitted. Now it's
+			 * too early to add \0 chars inside the line. */
+			agent_without_parens = 1;
+			agent_start = last-1;
+			while(*agent_start != '"')
+				agent_start--;
+		} else {
+			/* No way... no user agent detected in this line. */
+			agent = "";
+		}
 	} else {
-                /* User agent with () inside. Simple to detect, just
-                 * search the left and the right '"' chars enclosing
-                 * it. */
+		/* User agent with () inside. Simple to detect, just
+		 * search the left and the right '"' chars enclosing
+		 * it. */
 		p = agent;
 		while (p >= l) {
 			if (*p == '"') {
@@ -1116,11 +1130,11 @@ int vi_parse_line(struct logline *ll, char *l)
 	}
 	/* req */
 	if ((req = strstr(l, "\"GET")) != NULL ||
-	    (req = strstr(l, "\"POST")) != NULL ||
-	    (req = strstr(l, "\"HEAD")) != NULL ||
-	    (req = strstr(l, "\"get")) != NULL ||
-	    (req = strstr(l, "\"post")) != NULL ||
-	    (req = strstr(l, "\"head")) != NULL)
+		(req = strstr(l, "\"POST")) != NULL ||
+		(req = strstr(l, "\"HEAD")) != NULL ||
+		(req = strstr(l, "\"get")) != NULL ||
+		(req = strstr(l, "\"post")) != NULL ||
+		(req = strstr(l, "\"head")) != NULL)
 	{
 		req++;
 	} else {
@@ -1128,7 +1142,7 @@ int vi_parse_line(struct logline *ll, char *l)
 	}
 	/* ref */
 	if ((ref = strstr(l, "\"http")) != NULL ||
-	    (ref = strstr(l, "\"HTTP")) != NULL)
+		(ref = strstr(l, "\"HTTP")) != NULL)
 	{
 		ref++;
 	} else {
@@ -1173,18 +1187,18 @@ int vi_parse_line(struct logline *ll, char *l)
 		*p = '\0';
 	}
 	/* agent */
-        if (agent_without_parens) {
-            /* User agent without (...) inside in a string with six '"' chars.
-             * Just search for the end. */
-            char *aux = strchr(agent_start+1, '"');
-            if (!aux) {
-                /* No way! */
-                agent = "";
-            } else {
-                *aux = '\0';
-                agent = agent_start+1;
-            }
-        } else if ((p = strchr(agent, ')')) == NULL) {
+	if (agent_without_parens) {
+		/* User agent without (...) inside in a string with six '"' chars.
+		 * Just search for the end. */
+		char *aux = strchr(agent_start+1, '"');
+		if (!aux) {
+			/* No way! */
+			agent = "";
+		} else {
+			*aux = '\0';
+			agent = agent_start+1;
+		}
+	} else if ((p = strchr(agent, ')')) == NULL) {
 		agent = "";
 	} else {
 		char *aux;
@@ -1196,7 +1210,7 @@ int vi_parse_line(struct logline *ll, char *l)
 			*(p+1) = '\0';
 		if (agent_start) {
 			if ((!req_end || (req_end != agent_start)) &&
-			    (!ref_end || (ref_end != agent_start))) {
+				(!ref_end || (ref_end != agent_start))) {
 				agent = agent_start+1;
 			}
 		}
@@ -1241,24 +1255,24 @@ void vi_process_month_and_day(struct vih *vih, int month, int day)
 int vi_process_visitors_per_day(struct vih *vih, char *host, char *agent, char *date, char *ref, char *req, int *seen)
 {
 	char visday[VI_LINE_MAX], *p, *month = "fixme if I'm here!";
-        char buf[64];
+	char buf[64];
 	int res, host_len, agent_len, date_len, hash_len;
-        unsigned long h;
+	unsigned long h;
 
-        /* Ignore visits from Bots */
-        if (vi_is_bot_agent(agent)) {
-            if (seen != NULL) seen = 0;
-            return 0;
-        }
+	/* Ignore visits from Bots */
+	if (vi_is_bot_agent(agent)) {
+		if (seen != NULL) seen = 0;
+		return 0;
+	}
 
-        /* Build an unique identifier for this visit
-         * adding together host, date and hash(user agent) */
+		/* Build an unique identifier for this visit
+		 * adding together host, date and hash(user agent) */
 	host_len = strlen(host);
 	agent_len = strlen(agent);
 	date_len = strlen(date);
-        h = djb_hash((unsigned char*) agent, agent_len);
-        sprintf(buf, "%lu", h);
-        hash_len = strlen(buf);
+	h = djb_hash((unsigned char*) agent, agent_len);
+	sprintf(buf, "%lu", h);
+	hash_len = strlen(buf);
 	if (host_len+agent_len+date_len+4 > VI_LINE_MAX)
 		return 0;
 	p = visday;
@@ -1268,7 +1282,7 @@ int vi_process_visitors_per_day(struct vih *vih, char *host, char *agent, char *
 	*p++ = '|';
 	memcpy(p, buf, hash_len); p += hash_len;
 	*p = '\0';
-        /* fprintf(stderr, "%s\n", visday); */
+		/* fprintf(stderr, "%s\n", visday); */
 
 	if (Config_process_monthly_visitors) {
 		/* Skip the day number. */
@@ -1319,10 +1333,10 @@ int vi_process_referer(struct vih *vih, char *ref, time_t age)
 {
 	int res;
 
-        /* Check the url against the blacklist if needed
-         * this can be very slow... */
-        if (Config_filter_spam && vi_is_blacklisted_url(vih, ref))
-            return 0;
+	/* Check the url against the blacklist if needed
+	 * this can be very slow... */
+	if (Config_filter_spam && vi_is_blacklisted_url(vih, ref))
+		return 0;
 	/* Don't count internal referer (specified by the user
 	 * using --prefix options), nor google referers. */
 	if (vi_is_internal_link(ref))
@@ -1347,10 +1361,11 @@ int vi_process_page_request(struct vih *vih, char *url)
 	char urldecoded[VI_LINE_MAX];
 
 	vi_urldecode(urldecoded, url, VI_LINE_MAX);
-	if (vi_is_image(url))
+	if (vi_is_image(url)){
 		res = vi_counter_incr(&vih->images, urldecoded);
-	else
+	} else {
 		res = vi_counter_incr(&vih->pages, urldecoded);
+	}
 	if (res == 0) return 1;
 	return 0;
 }
@@ -1360,12 +1375,14 @@ int vi_process_error404(struct vih *vih, char *l, char *url, int *is404)
 {
 	char urldecoded[VI_LINE_MAX];
 
-        if (is404) *is404 = 0;
+	if (is404) *is404 = 0;
 	vi_urldecode(urldecoded, url, VI_LINE_MAX);
 	if (strstr(l, " 404 ") && !strstr(l, " 200 ")) {
-                if (is404) *is404 = 1;
+		if (is404) {
+			*is404 = 1;
+		}
 		return !vi_counter_incr(&vih->error404, urldecoded);
-        }
+	}
 	return 0;
 }
 
@@ -1470,39 +1487,39 @@ int vi_process_browsers(struct vih *vih, char *agent)
  * Return non-zero on out of memory. */
 int vi_process_googled(struct vih *vih, char *req, char *agent, time_t age)
 {
-        if (vi_is_googlebot_agent(agent)) {
-	    return vi_replace_if_newer(&vih->googled, req, age);
-        } else if (vi_is_adsensebot_agent(agent)) {
-	    return vi_replace_if_newer(&vih->adsensed, req, age);
-        }
-        return 0;
+		if (vi_is_googlebot_agent(agent)) {
+			return vi_replace_if_newer(&vih->googled, req, age);
+		} else if (vi_is_adsensebot_agent(agent)) {
+			return vi_replace_if_newer(&vih->adsensed, req, age);
+		}
+		return 0;
 }
 
 /* Process screen resolution and color depth info, if the javascript
  * code needed was inserted in the pages (see the README file). */
 int vi_process_screen_info(struct vih *vih, char *req) {
-    char *p;
+	char *p;
 
-    if ((p = strstr(req, "visitors-screen-res-check.jpg?"))) {
-        char buf[64];
+	if ((p = strstr(req, "visitors-screen-res-check.jpg?"))) {
+		char buf[64];
 
-        p += 30;
-        if (p[0] == '\0' || strstr(p, "undefined")) goto parseerror;
-        vi_strlcpy(buf, p, 64);
-        /* The string is somethink like: 1024x768x32, so we
-         * search for the second 'x' char. */
-        p = strchr(buf,'x'); if (!p) goto parseerror;
-        p = strchr(p+1,'x'); if (!p) goto parseerror;
-        *p = '\0'; p++;
-        /* Populate the screen resolution hash table */
-        if (vi_counter_incr(&vih->screenres, buf) == 0)
-            return 1;
-        /* ... and the screen color depth one. */
-        if (vi_counter_incr(&vih->screendepth, p) == 0)
-            return 1;
-    }
+		p += 30;
+		if (p[0] == '\0' || strstr(p, "undefined")) goto parseerror;
+		vi_strlcpy(buf, p, 64);
+		/* The string is somethink like: 1024x768x32, so we
+		 * search for the second 'x' char. */
+		p = strchr(buf,'x'); if (!p) goto parseerror;
+		p = strchr(p+1,'x'); if (!p) goto parseerror;
+		*p = '\0'; p++;
+		/* Populate the screen resolution hash table */
+		if (vi_counter_incr(&vih->screenres, buf) == 0)
+			return 1;
+		/* ... and the screen color depth one. */
+		if (vi_counter_incr(&vih->screendepth, p) == 0)
+			return 1;
+	}
 parseerror:
-    return 0;
+	return 0;
 }
 
 /* Process accesses with the referer from google.
@@ -1516,24 +1533,24 @@ int vi_process_google_keyphrases(struct vih *vih, char *ref, time_t age)
 	char buf[64];
 
 	if (!vi_is_google_link(ref)) return 0;
-        /* Try to process gogoe human language info first. */
-        if (Config_process_google_human_language) {
-            s = strstr(ref+18, "&hl=");
-            if (s == NULL) s = strstr(ref+18, "?hl=");
-            if (s && s[4] && s[5]) {
-                buf[0] = s[4];
-                buf[1] = s[5];
-                buf[2] = '\0';
-	        if (vi_counter_incr(&vih->googlehumanlanguage, buf) == 0)
-                    return 1;
-            }
-        }
+		/* Try to process gogoe human language info first. */
+		if (Config_process_google_human_language) {
+			s = strstr(ref+18, "&hl=");
+			if (s == NULL) s = strstr(ref+18, "?hl=");
+			if (s && s[4] && s[5]) {
+				buf[0] = s[4];
+				buf[1] = s[5];
+				buf[2] = '\0';
+			if (vi_counter_incr(&vih->googlehumanlanguage, buf) == 0)
+					return 1;
+			}
+		}
 
 	/* It's possible to start the search for the query 18 chars
 	 * after the start of the referer because all the
 	 * google links will start with "http://www.google.". */
 	if ((s = strstr(ref+18, "?q=")) == NULL &&
-	    (s = strstr(ref+18, "&q=")) == NULL) return 0;
+		(s = strstr(ref+18, "&q=")) == NULL) return 0;
 	if ((p = strstr(ref+18, "&start=")) == NULL)
 		p = strstr(ref+18, "?start=");
 	if ((e = strchr(s+3, '&')) != NULL)
@@ -1623,27 +1640,27 @@ int vi_process_tld(struct vih *vih, char *hostname)
  * if the line must be processed or not. */
 int vi_match_line(char *line)
 {
-    int i;
+	int i;
 
-    for (i = 0; i < Config_grep_pattern_num; i++) {
-        char *pattern = Config_grep_pattern[i].pattern;
-        int nocase = 1;
+	for (i = 0; i < Config_grep_pattern_num; i++) {
+		char *pattern = Config_grep_pattern[i].pattern;
+		int nocase = 1;
 
-        /* Patterns starting with 'cs:' are matched in a case-sensitive
-         * way after the 'cs:' prefix is discarded. */
-        if (pattern[0] == 'c' && pattern[1] == 's' && pattern[2] == ':') {
-            nocase = 0;
-            pattern += 3;
-        }
-        if (vi_match(Config_grep_pattern[i].pattern, line, nocase)) {
-            if (Config_grep_pattern[i].type == VI_PATTERNTYPE_EXCLUDE)
-                return 0;
-        } else {
-            if (Config_grep_pattern[i].type == VI_PATTERNTYPE_GREP)
-                return 0;
-        }
-    }
-    return 1;
+		/* Patterns starting with 'cs:' are matched in a case-sensitive
+		 * way after the 'cs:' prefix is discarded. */
+		if (pattern[0] == 'c' && pattern[1] == 's' && pattern[2] == ':') {
+			nocase = 0;
+			pattern += 3;
+		}
+		if (vi_match(Config_grep_pattern[i].pattern, line, nocase)) {
+			if (Config_grep_pattern[i].type == VI_PATTERNTYPE_EXCLUDE)
+				return 0;
+		} else {
+			if (Config_grep_pattern[i].type == VI_PATTERNTYPE_GREP)
+				return 0;
+		}
+	}
+	return 1;
 }
 
 /* Process a line of log. Returns non-zero on error. */
@@ -1652,12 +1669,12 @@ int vi_process_line(struct vih *vih, char *l)
 	struct logline ll;
 	char origline[VI_LINE_MAX];
 
-        /* Test the line against --grep --exclude patterns before
-         * to process it. */
-        if (Config_grep_pattern_num) {
-            if (vi_match_line(l) == 0)
-                return 0; /* No match? skip. */
-        }
+		/* Test the line against --grep --exclude patterns before
+		 * to process it. */
+		if (Config_grep_pattern_num) {
+			if (vi_match_line(l) == 0)
+				return 0; /* No match? skip. */
+		}
 
 	vih->processed++;
 	/* Take a copy of the original log line before to
@@ -1669,23 +1686,23 @@ int vi_process_line(struct vih *vih, char *l)
 	if (vi_parse_line(&ll, l) == 0) {
 		int seen, is404;
 
-                /* We process 404 errors first, in order to skip
-                 * all the other reports if --ignore-404 option is active. */
+				/* We process 404 errors first, in order to skip
+				 * all the other reports if --ignore-404 option is active. */
 		if (Config_process_error404 &&
-		    vi_process_error404(vih, origline, ll.req, &is404))
-                        goto oom;
-                /* Process screen info if needed. */
-                if (Config_process_screen_info && is404)
-                    if (vi_process_screen_info(vih, ll.req)) goto oom;
-                /* 404 error AND --ignore-404? Stop processing of this line. */
-                if (Config_ignore_404 && is404)
-                    return 0;
+			vi_process_error404(vih, origline, ll.req, &is404))
+						goto oom;
+				/* Process screen info if needed. */
+				if (Config_process_screen_info && is404)
+					if (vi_process_screen_info(vih, ll.req)) goto oom;
+				/* 404 error AND --ignore-404? Stop processing of this line. */
+				if (Config_ignore_404 && is404)
+					return 0;
 
-                /* Now it's time to process unique visitors. The 'save'
-                 * local var saves if this log line is about a new visit
-                 * or not. Some report is generated only against the first
-                 * line of every visitor, other reports are generated
-                 * for every single log line. */
+				/* Now it's time to process unique visitors. The 'save'
+				 * local var saves if this log line is about a new visit
+				 * or not. Some report is generated only against the first
+				 * line of every visitor, other reports are generated
+				 * for every single log line. */
 		if (vi_process_visitors_per_day(vih, ll.host, ll.agent,
 					ll.date, ll.ref, ll.req, &seen))
 			goto oom;
@@ -1693,12 +1710,12 @@ int vi_process_line(struct vih *vih, char *l)
 		/* The following are processed for every log line */
 		if (vi_process_page_request(vih, ll.req)) goto oom;
 		if (Config_process_google &&
-		    vi_process_googled(vih, ll.req, ll.agent, ll.time))
+			vi_process_googled(vih, ll.req, ll.agent, ll.time))
 			goto oom;
 		if (Config_process_web_trails &&
-		    vi_process_web_trails(vih, ll.ref, ll.req)) goto oom;
+			vi_process_web_trails(vih, ll.ref, ll.req)) goto oom;
 		if (Config_process_google_keyphrases &&
-		    vi_process_google_keyphrases(vih, ll.ref, ll.time))
+			vi_process_google_keyphrases(vih, ll.ref, ll.time))
 			goto oom;
 
 		/* The following are processed only for new visits */
@@ -1708,20 +1725,20 @@ int vi_process_line(struct vih *vih, char *l)
 		vi_process_month_and_day(vih, ll.tm.tm_mon, ll.tm.tm_mday-1);
 		if (vi_process_referer(vih, ll.ref, ll.time)) goto oom;
 		if (Config_process_agents &&
-		    vi_process_agents(vih, ll.agent)) goto oom;
+			vi_process_agents(vih, ll.agent)) goto oom;
 		if (Config_process_os &&
-		    vi_process_os(vih, ll.agent)) goto oom;
+			vi_process_os(vih, ll.agent)) goto oom;
 		if (Config_process_browsers &&
-		    vi_process_browsers(vih, ll.agent)) goto oom;
+			vi_process_browsers(vih, ll.agent)) goto oom;
 		if (Config_process_tld &&
-		    vi_process_tld(vih, ll.host)) goto oom;
+			vi_process_tld(vih, ll.host)) goto oom;
 		if (Config_process_robots &&
-		    vi_process_robots(vih, ll.req, ll.agent)) goto oom;
+			vi_process_robots(vih, ll.req, ll.agent)) goto oom;
 		return 0;
 	} else {
 		vih->invalid++;
-                if (Config_debug)
-                    fprintf(stderr, "Invalid line: %s\n", origline);
+				if (Config_debug)
+					fprintf(stderr, "Invalid line: %s\n", origline);
 		return 0;
 	}
 oom:
@@ -1848,14 +1865,14 @@ void om_text_print_numkey_info(FILE *fp, char *key, int val)
 
 void om_text_print_keykey_entry(FILE *fp, char *key1, char *key2, int num)
 {
-	fprintf(fp, "%d)    %s: %s\n", num, key1, key2);
+	fprintf(fp, "%d)	%s: %s\n", num, key1, key2);
 }
 
 void om_text_print_numkey_entry(FILE *fp, char *key, int val, char *link,
 		int num)
 {
 	link = link; /* avoid warning. Text output don't use this argument. */
-	fprintf(fp, "%d)    %s: %d\n", num, key, val);
+	fprintf(fp, "%d)	%s: %d\n", num, key, val);
 }
 
 /* Print a bar, c1 and c2 are the colors of the left and right parts.
@@ -1955,8 +1972,8 @@ void om_text_print_hline(FILE *fp)
 void om_text_print_credits(FILE *fp)
 {
 	fprintf(fp, "Statistics generated with VISITORS version %s\n"
-	       "http://www.hping.org/visitors for more information\n",
-	       VI_VERSION_STR);
+		   "http://www.hping.org/visitors for more information\n",
+		   VI_VERSION_STR);
 }
 
 void om_text_print_report_link(FILE *fp, char *report)
@@ -2332,7 +2349,7 @@ void vi_print_statistics(struct vih *vih)
 
 	if (elapsed == 0) elapsed++;
 	fprintf(stderr, "--\n%d lines processed in %ld seconds\n"
-	       "%d invalid lines, %d blacklisted referers\n",
+		   "%d invalid lines, %d blacklisted referers\n",
 			vih->processed, (long) elapsed,
 			vih->invalid, vih->blacklisted);
 }
@@ -2487,7 +2504,7 @@ void vi_print_visits_report(FILE *fp, struct vih *vih)
 		Output->print_numkeybar_entry(fp, key, max, tot, value);
 	}
 	free(table);
-        Output->print_hline(fp);
+		Output->print_hline(fp);
 
 	/* Montly */
 	if (Config_process_monthly_visitors == 0) return;
@@ -2548,7 +2565,7 @@ void vi_print_googlevisits_report(FILE *fp, struct vih *vih)
 		Output->print_numkeycomparativebar_entry(fp, key, value, googlevalue);
 	}
 	free(table);
-        Output->print_hline(fp);
+		Output->print_hline(fp);
 
 	/* Montly */
 	if (Config_process_monthly_visitors == 0) return;
@@ -2986,8 +3003,8 @@ void vi_print_report_links(FILE *fp)
 	"Google Keyphrases", &Config_process_google_keyphrases,
 	"Google Keyphrases by first time", &Config_process_google_keyphrases_age,
 	"Google Human Language", &Config_process_google_human_language,
-        "Screen resolution", &Config_process_screen_info,
-        "Screen color depth", &Config_process_screen_info,
+		"Screen resolution", &Config_process_screen_info,
+		"Screen color depth", &Config_process_screen_info,
 	"Web trails", &Config_process_web_trails,
 	"Weekday distribution", NULL,
 	"Hours distribution", NULL,
@@ -3113,9 +3130,9 @@ int vi_print_report(char *of, struct vih *vih)
 		}
 	}
 
-        /* Disable specific reports when there is no data. */
-        if (ht_used(&vih->screenres) == 0)
-                Config_process_screen_info = 0;
+		/* Disable specific reports when there is no data. */
+		if (ht_used(&vih->screenres) == 0)
+				Config_process_screen_info = 0;
 	/* Do some data postprocessing needed to generate reports */
 	if (vi_postprocess(vih))
 		return 1;
@@ -3191,16 +3208,16 @@ int vi_print_report(char *of, struct vih *vih)
 		vi_print_google_keyphrases_age_report(fp, vih);
 		vi_print_hline(fp);
 	}
-        if (Config_process_google_human_language) {
+		if (Config_process_google_human_language) {
 		vi_print_google_human_language_report(fp, vih);
 		vi_print_hline(fp);
-        }
-        if (Config_process_screen_info) {
-                vi_print_screen_res_report(fp, vih);
-                vi_print_hline(fp);
-                vi_print_screen_depth_report(fp, vih);
-                vi_print_hline(fp);
-        }
+		}
+		if (Config_process_screen_info) {
+				vi_print_screen_res_report(fp, vih);
+				vi_print_hline(fp);
+				vi_print_screen_depth_report(fp, vih);
+				vi_print_hline(fp);
+		}
 	if (Config_process_web_trails) {
 		vi_print_trails_report(fp, vih);
 		vi_print_hline(fp);
@@ -3290,7 +3307,7 @@ void vi_stream_mode(struct vih *vih)
 		}
 		/* reset */
 		if (Config_reset_every &&
-		    ((now_t - lastreset_t) >= Config_reset_every))
+			((now_t - lastreset_t) >= Config_reset_every))
 		{
 			lastreset_t = now_t;
 			vi_reset(vih);
@@ -3312,7 +3329,7 @@ static struct ago_optlist visitors_optlist[] = {
 	{ 'G',	"google",		OPT_GOOGLE,		AGO_NOARG},
 	{ 'K',	"google-keyphrases",	OPT_GOOGLEKEYPHRASES,	AGO_NOARG},
 	{ 'Z',	"google-keyphrases-age", OPT_GOOGLEKEYPHRASESAGE, AGO_NOARG},
-        { 'H',  "google-human-language", OPT_GOOGLEHUMANLANGUAGE, AGO_NOARG},
+		{ 'H',  "google-human-language", OPT_GOOGLEHUMANLANGUAGE, AGO_NOARG},
 	{ 'U',	"user-agents",		OPT_USERAGENTS,		AGO_NOARG},
 	{ 'W',  "weekday-hour-map",	OPT_WEEKDAYHOUR_MAP,	AGO_NOARG},
 	{ 'M',  "month-day-map",	OPT_MONTHDAY_MAP,	AGO_NOARG},
@@ -3343,8 +3360,8 @@ static struct ago_optlist visitors_optlist[] = {
 	{ 'a',	"max-referers-age",	OPT_MAXREFERERSAGE,	AGO_NEEDARG},
 	{ 'd',	"max-domains",		OPT_MAXTLD,		AGO_NEEDARG},
 	{ 's',	"max-robots",		OPT_MAXROBOTS,		AGO_NEEDARG},
-        { '\0', "grep",                 OPT_GREP,               AGO_NEEDARG},
-        { '\0', "exclude",              OPT_EXCLUDE,            AGO_NEEDARG},
+		{ '\0', "grep",				 OPT_GREP,			   AGO_NEEDARG},
+		{ '\0', "exclude",			  OPT_EXCLUDE,			AGO_NEEDARG},
 	{ 'P',  "prefix",		OPT_PREFIX,		AGO_NEEDARG},
 	{ 'o',  "output",		OPT_OUTPUT,		AGO_NEEDARG},
 	{ 'V',  "graphviz",		OPT_GRAPHVIZ,		AGO_NOARG},
@@ -3357,8 +3374,8 @@ static struct ago_optlist visitors_optlist[] = {
 	{ 'v',  "version",		OPT_VERSION,		AGO_NOARG},
 	{ '\0', "tail",			OPT_TAIL,		AGO_NOARG},
 	{ '\0', "time-delta",		OPT_TIMEDELTA,		AGO_NEEDARG},
-        { '\0', "filter-spam",          OPT_FILTERSPAM,         AGO_NOARG},
-        { '\0', "ignore-404",           OPT_IGNORE404,          AGO_NOARG},
+		{ '\0', "filter-spam",		  OPT_FILTERSPAM,		 AGO_NOARG},
+		{ '\0', "ignore-404",		   OPT_IGNORE404,		  AGO_NOARG},
 	{ '\0',	"debug",		OPT_DEBUG,		AGO_NOARG},
 	{ 'h',	"help",			OPT_HELP,		AGO_NOARG},
 	AGO_LIST_TERM
@@ -3374,16 +3391,16 @@ void visitors_show_help(void)
 		if (visitors_optlist[i].ao_short != '\0') {
 			printf("  -%c ", visitors_optlist[i].ao_short);
 		} else {
-			printf("     ");
+			printf("	 ");
 		}
 		printf("--%-30s %s\n",
 				visitors_optlist[i].ao_long,
 				(visitors_optlist[i].ao_flags & AGO_NEEDARG) ?
 					"<argument>" : "");
 	}
-        printf("\nNOTE: --filter-spam can be *very* slow. Use with care.\n\n");
+		printf("\nNOTE: --filter-spam can be *very* slow. Use with care.\n\n");
 	printf("For more information visit http://www.hping.org/visitors\n"
-	       "Visitors is Copyright(C) 2004-2006 Salvatore Sanfilippo <antirez@invece.org>\n");
+		   "Visitors is Copyright(C) 2004-2006 Salvatore Sanfilippo <antirez@invece.org>\n");
 }
 
 int main(int argc, char **argv)
@@ -3462,7 +3479,7 @@ int main(int argc, char **argv)
 			Config_process_google_keyphrases_age = 1;
 			break;
 		case OPT_GOOGLEHUMANLANGUAGE:
-                        Config_process_google_keyphrases = 1;
+						Config_process_google_keyphrases = 1;
 			Config_process_google_human_language = 1;
 			break;
 		case OPT_TLD:
@@ -3498,7 +3515,7 @@ int main(int argc, char **argv)
 			Config_process_error404 = 1;
 			Config_process_pageviews = 1;
 			Config_process_robots = 1;
-                        Config_process_screen_info = 1;
+						Config_process_screen_info = 1;
 			break;
 		case OPT_PREFIX:
 			if (Config_prefix_num < VI_PREFIXES_MAX) {
@@ -3582,24 +3599,24 @@ int main(int argc, char **argv)
 		case OPT_TIMEDELTA:
 			Config_time_delta = atoi(ago_optarg);
 			break;
-                case OPT_FILTERSPAM:
-                        Config_filter_spam = 1;
-                        break;
-                case OPT_GREP:
-                        ConfigAddGrepPattern(ago_optarg, VI_PATTERNTYPE_GREP);
-                        break;
-                case OPT_EXCLUDE:
-                        ConfigAddGrepPattern(ago_optarg, VI_PATTERNTYPE_EXCLUDE);
-                        break;
-                case OPT_IGNORE404:
-                        Config_ignore_404 = 1;
-                        break;
-                case OPT_DEBUG:
-                        Config_debug = 1;
-                        break;
-                case OPT_SCREENINFO:
-                        Config_process_screen_info = 1;
-                        break;
+				case OPT_FILTERSPAM:
+						Config_filter_spam = 1;
+						break;
+				case OPT_GREP:
+						ConfigAddGrepPattern(ago_optarg, VI_PATTERNTYPE_GREP);
+						break;
+				case OPT_EXCLUDE:
+						ConfigAddGrepPattern(ago_optarg, VI_PATTERNTYPE_EXCLUDE);
+						break;
+				case OPT_IGNORE404:
+						Config_ignore_404 = 1;
+						break;
+				case OPT_DEBUG:
+						Config_debug = 1;
+						break;
+				case OPT_SCREENINFO:
+						Config_process_screen_info = 1;
+						break;
 		case AGO_ALONE:
 			if (filenamec < VI_FILENAMES_MAX)
 				filenames[filenamec++] = ago_optarg;
@@ -3624,11 +3641,11 @@ int main(int argc, char **argv)
 		fprintf(stderr, "At least one prefix must be specified (using --prefix) for web trails\nExample: --prefix http://your.site.org\n");
 		exit(1);
 	}
-        /* If screen-info is enabled, error 404 must be too, auto-enable it. */
-        if (Config_process_screen_info && !Config_process_error404) {
-            fprintf(stderr, "Note: 404 error processing enabled for screen-info report\n");
-            Config_process_error404 = 1;
-        }
+		/* If screen-info is enabled, error 404 must be too, auto-enable it. */
+		if (Config_process_screen_info && !Config_process_error404) {
+			fprintf(stderr, "Note: 404 error processing enabled for screen-info report\n");
+			Config_process_error404 = 1;
+		}
 	/* If stream-mode is enabled, --output-file should be specified. */
 	if (Config_stream_mode && Config_output_file == NULL) {
 		fprintf(stderr, "--stream requires --output-file\n");
@@ -3659,11 +3676,11 @@ int main(int argc, char **argv)
 		}
 	}
 	vi_print_statistics(vih);
-        /* The following is commented in releases as to free the hashtable
-         * memory is very slow, it's better to just exit the program.
-         * Still it is important to be able to re-enable a good cleanup
-         * in order to run visitors against valgrind to check for memory
-         * leaks. */
-        /* vi_free(vih); */
+	/* The following is commented in releases as to free the hashtable
+	 * memory is very slow, it's better to just exit the program.
+	 * Still it is important to be able to re-enable a good cleanup
+	 * in order to run visitors against valgrind to check for memory
+	 * leaks. */
+	/* vi_free(vih); */
 	return 0;
 }

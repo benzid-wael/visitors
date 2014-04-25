@@ -7,13 +7,12 @@ DEBUG?= -g
 CFLAGS?= -O2 -Wall -W
 CCOPT= $(CFLAGS)
 
-OBJ = visitors.o aht.o antigetopt.o tail.o
+OBJ = $(patsubst %.c,%.o,$(wildcard *.c))
 PRGNAME = visitors
 
-all: visitors
+all: $(PRGNAME)
 
-visitors.o: visitors.c blacklist.h
-visitors: $(OBJ)
+$(PRGNAME): $(OBJ)
 	$(CC) -o $(PRGNAME) $(CCOPT) $(DEBUG) $(OBJ)
 
 .c.o:
@@ -21,3 +20,4 @@ visitors: $(OBJ)
 
 clean:
 	rm -rf $(PRGNAME) *.o
+	find -name '*~' -delete

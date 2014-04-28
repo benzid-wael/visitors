@@ -21,6 +21,8 @@
 #include "blacklist.h"
 #include "config.h"
 #include "date_utils.h"
+#include "omtext.h"
+#include "omhtml.h"
 
 
 /*------------------------------- data structures ----------------------------*/
@@ -79,27 +81,6 @@ struct logline {
 	struct tm tm;
 };
 
-/* output module structure. See below for the definition of
- * the text and html output modules. */
-struct outputmodule {
-	void (*print_header)(FILE *fp);
-	void (*print_footer)(FILE *fp);
-	void (*print_title)(FILE *fp, char *title);
-	void (*print_subtitle)(FILE *fp, char *title);
-	void (*print_numkey_info)(FILE *fp, char *key, int val);
-	void (*print_keykey_entry)(FILE *fp, char *key1, char *key2, int num);
-	void (*print_numkey_entry)(FILE *fp, char *key, int val, char *link,
-			int num);
-	void (*print_numkeybar_entry)(FILE *fp, char *key, int max, int tot,
-			int this);
-	void (*print_numkeycomparativebar_entry)(FILE *fp, char *key, int tot,
-			int this);
-	void (*print_bidimentional_map)(FILE *fp, int xlen, int ylen,
-			char **xlabel, char **ylabel, int *value);
-	void (*print_hline)(FILE *fp);
-	void (*print_credits)(FILE *fp);
-	void (*print_report_link)(FILE *fp, char *report);
-};
 
 /* Just a string with cached length */
 struct vistring {
@@ -281,8 +262,8 @@ int vi_is_image(char *s)
 	char *end = s + l; /* point to the nul term */
 
 	if (l < 5) return 0;
-	if (!memcmp(end-4, ".css", 4) || 
-		!memcmp(end-4, ".jpg", 4) || 
+	if (!memcmp(end-4, ".css", 4) ||
+		!memcmp(end-4, ".jpg", 4) ||
 		!memcmp(end-4, ".gif", 4) ||
 		!memcmp(end-4, ".png", 4) ||
 		!memcmp(end-4, ".ico", 4) ||
@@ -309,8 +290,8 @@ int vi_is_pageview(char *s)
 
 	if (s[l-1] == '/') return 1;
 	if (l >= 6 &&
-		(!memcmp(end-5, ".html", 5) || 
-		!memcmp(end-4, ".htm", 4) || 
+		(!memcmp(end-5, ".html", 5) ||
+		!memcmp(end-4, ".htm", 4) ||
 		!memcmp(end-4, ".php", 4) ||
 		!memcmp(end-4, ".asp", 4) ||
 		!memcmp(end-4, ".jsp", 4) ||
@@ -320,8 +301,8 @@ int vi_is_pageview(char *s)
 		!memcmp(end-4, ".cgi", 4) ||
 		!memcmp(end-3, ".pl", 3) ||
 		!memcmp(end-6, ".shtml", 6) ||
-		!memcmp(end-5, ".HTML", 5) || 
-		!memcmp(end-4, ".HTM", 4) || 
+		!memcmp(end-5, ".HTML", 5) ||
+		!memcmp(end-4, ".HTM", 4) ||
 		!memcmp(end-4, ".PHP", 4) ||
 		!memcmp(end-4, ".ASP", 4) ||
 		!memcmp(end-4, ".JSP", 4) ||
@@ -793,7 +774,7 @@ int vi_counter_incr(struct hashtable *ht, char *key)
 	unsigned int idx;
 	int r;
 	long val;
-	
+
 	r = ht_search(ht, key, &idx);
 	if (r == HT_NOTFOUND) {
 		k = strdup(key);
@@ -1699,512 +1680,6 @@ oom:
 	return 1;
 }
 
-/* ---------------------------- text output module -------------------------- */
-void om_text_print_header(FILE *fp)
-{
-	fp = fp;
-	return;
-}
-
-void om_text_print_footer(FILE *fp)
-{
-	fp = fp;
-	return;
-}
-
-void om_text_print_title(FILE *fp, char *title)
-{
-	fprintf(fp, "=== %s ===\n", title);
-}
-
-void om_text_print_subtitle(FILE *fp, char *subtitle)
-{
-	fprintf(fp, "--- %s\n", subtitle);
-}
-
-void om_text_print_numkey_info(FILE *fp, char *key, int val)
-{
-	fprintf(fp, "* %s: %d\n", key, val);
-}
-
-void om_text_print_keykey_entry(FILE *fp, char *key1, char *key2, int num)
-{
-	fprintf(fp, "%d)	%s: %s\n", num, key1, key2);
-}
-
-void om_text_print_numkey_entry(FILE *fp, char *key, int val, char *link,
-		int num)
-{
-	link = link; /* avoid warning. Text output don't use this argument. */
-	fprintf(fp, "%d)	%s: %d\n", num, key, val);
-}
-
-/* Print a bar, c1 and c2 are the colors of the left and right parts.
- * Max is the maximum value of the bar, the bar length is printed
- * to be porportional to max. tot is the "total" needed to compute
- * the precentage value. */
-void om_text_print_bar(FILE *fp, int max, int tot, int this, int cols,
-		char c1, char c2)
-{
-	int l;
-	float p;
-	char *bar;
-	if (tot == 0) tot++;
-	if (max == 0) max++;
-	l = ((float)(cols*this))/max;
-	p = ((float)(100*this))/tot;
-	bar = malloc(cols+1);
-	if (!bar) return;
-	memset(bar, c2, cols+1);
-	memset(bar, c1, l);
-	bar[cols] = '\0';
-	fprintf(fp, "%s %02.1f%%", bar, p);
-	free(bar);
-}
-
-void om_text_print_numkeybar_entry(FILE *fp, char *key, int max, int tot, int this)
-{
-	fprintf(fp, "   %-12s: %-9d |", key, this);
-	om_text_print_bar(fp, max, tot, this, 44, '#', ' ');
-	fprintf(fp, "\n");
-}
-
-void om_text_print_numkeycomparativebar_entry(FILE *fp, char *key, int tot, int this)
-{
-	fprintf(fp, "   %s: %-10d |", key, this);
-	om_text_print_bar(fp, tot, tot, this, 44, '#', '.');
-	fprintf(fp, "\n");
-}
-
-void om_text_print_bidimentional_map(FILE *fp, int xlen, int ylen,
-			char **xlabel, char **ylabel, int *value)
-{
-	char *asciipal = " .-+#";
-	int pallen = strlen(asciipal);
-	int x, y, l, max = 0;
-
-	/* Get the max value */
-	l = xlen*ylen;
-	for (x = 0; x < l; x++)
-		if (max < value[x])
-			max = value[x];
-	if (max == 0) max++; /* avoid division by zero */
-	/* print the map */
-	for (y = 0; y < ylen; y++) {
-		fprintf(fp, "%15s: ", ylabel[y]);
-		for (x = 0; x < xlen; x++) {
-			int coloridx;
-			int val = value[(y*xlen)+x];
-
-			coloridx = ((pallen-1)*val)/max;
-			fputc(asciipal[coloridx], fp);
-		}
-		fprintf(fp, "\n");
-	}
-	fprintf(fp, "\n");
-	/* print the x-labels in vertical */
-	{
-		char **p = malloc(sizeof(char*)*xlen);
-		/* The 'p' pointers array is initialized at the
-		 * start of all the x-labels. */
-		for (x = 0; x < xlen; x++)
-			p[x] = xlabel[x];
-		while(1) {
-			int sentinel = 0;
-			fprintf(fp, "%15s  ", "");
-			for (x = 0; x < xlen; x++) {
-				if (*(p[x]) != '\0') {
-					fputc(*(p[x]), fp);
-					p[x]++;
-					sentinel++;
-				} else {
-					fputc(' ', fp);
-				}
-			}
-			fputc('\n', fp);
-			if (sentinel == 0) break;
-		}
-		free(p);
-	}
-}
-
-void om_text_print_hline(FILE *fp)
-{
-	fprintf(fp, "\n");
-}
-
-void om_text_print_credits(FILE *fp)
-{
-	fprintf(fp, "Statistics generated with VISITORS version %s\n"
-		   "http://www.hping.org/visitors for more information\n",
-		   VI_VERSION_STR);
-}
-
-void om_text_print_report_link(FILE *fp, char *report)
-{
-	fprintf(fp, "-> %s\n", report);
-	return;
-}
-
-struct outputmodule OutputModuleText = {
-	om_text_print_header,
-	om_text_print_footer,
-	om_text_print_title,
-	om_text_print_subtitle,
-	om_text_print_numkey_info,
-	om_text_print_keykey_entry,
-	om_text_print_numkey_entry,
-	om_text_print_numkeybar_entry,
-	om_text_print_numkeycomparativebar_entry,
-	om_text_print_bidimentional_map,
-	om_text_print_hline,
-	om_text_print_credits,
-	om_text_print_report_link,
-};
-
-/* ---------------------------- html output module -------------------------- */
-/* Use html entities for special chars. Abbreviates at 'maxlen' if needed. */
-void om_html_entities_abbr(FILE *fp, char *s, int maxlen)
-{
-	while(*s) {
-		if (maxlen-- == 0) {
-			fprintf(fp, "...");
-			break;
-		}
-		switch(*s) {
-		case '\'': fprintf(fp, "&#39;"); break;
-		case '"': fprintf(fp, "&#34;"); break;
-		case '&': fprintf(fp, "&amp;"); break;
-		case '<': fprintf(fp, "&lt;"); break;
-		case '>': fprintf(fp, "&gt;"); break;
-		default: fputc(*s, fp); break;
-		}
-		s++;
-	}
-}
-
-/* A wrapper to om_html_entities_abbr() with a fixed abbreviation length */
-void om_html_entities(FILE *fp, char *s)
-{
-	om_html_entities_abbr(fp, s, VI_HTML_ABBR_LEN);
-}
-
-void om_html_print_header(FILE *fp)
-{
-	fprintf(fp,
-"<html>\n"
-"<head>\n"
-"<style>\n"
-"BODY, TD, B, LI, U, DIV, SPAN {\n"
-"	background-color: #ffffff;\n"
-"	color: #000000;\n"
-"	font-family: Verdana, Arial, Helvetica, Sans-Serif;\n"
-"	font-size: 10px;\n"
-"}\n"
-"A {\n"
-"	color: #0066ff;\n"
-"	text-decoration: none;\n"
-"}\n"
-"A:visited {\n"
-"	color: #000099;\n"
-"	text-decoration: none;\n"
-"}\n"
-"A:active {\n"
-"	color: #26a0be;\n"
-"	text-decoration: none;\n"
-"}\n"
-"A:hover {\n"
-"	color: #ffffff;\n"
-"	text-decoration: none;\n"
-"	background-color: #26a0be;\n"
-"}\n"
-".barfill {\n"
-"	background-color: #96ef94;\n"
-"	border-left: 1px;\n"
-"	border-right: 1px;\n"
-"	border-top: 1px;\n"
-"	border-bottom: 1px;\n"
-"	border-color: #4c934a;\n"
-"	border-style: solid;\n"
-"	font-size: 10px;\n"
-"	height: 3px;\n"
-"	line-height: 4px;\n"
-"}\n"
-".barempty {\n"
-"	font-size: 10px;\n"
-"	line-height: 4px;\n"
-"}\n"
-".barleft {\n"
-"	background-color: #ff9696;\n"
-"	border-left: 1px;\n"
-"	border-right: 1px;\n"
-"	border-top: 1px;\n"
-"	border-bottom: 1px;\n"
-"	border-color: #4c934a;\n"
-"	border-style: solid;\n"
-"	font-size: 10px;\n"
-"	height: 3px;\n"
-"	line-height: 4px;\n"
-"}\n"
-".barright {\n"
-"	background-color: #f8f8f8;\n"
-"	border-left: 0px;\n"
-"	border-right: 1px;\n"
-"	border-top: 1px;\n"
-"	border-bottom: 1px;\n"
-"	border-color: #4c934a;\n"
-"	border-style: solid;\n"
-"	font-size: 10px;\n"
-"	height: 3px;\n"
-"	line-height: 4px;\n"
-"}\n"
-".title {\n"
-"	background-color: #007f9e;\n"
-"	font-size: 12px;\n"
-"	font-weight: bold;\n"
-"	padding: 3px;\n"
-"	color: #ffffff;\n"
-"}\n"
-".reportlink {\n"
-"	background-color: #ffffff;\n"
-"	font-size: 12px;\n"
-"	font-weight: bold;\n"
-"	color: #000000;\n"
-"	padding-left: 3px;\n"
-"}\n"
-".subtitle {\n"
-"	background-color: #007f9e;\n"
-"	font-size: 12px;\n"
-"	font-weight: normal;\n"
-"	padding: 3px;\n"
-"	color: #ffffff;\n"
-"}\n"
-".info {\n"
-"	background-color: #badfee;\n"
-"	font-size: 12px;\n"
-"	padding-left: 3px;\n"
-"	padding-right: 3px;\n"
-"}\n"
-".keyentry {\n"
-"	font-size: 10px;\n"
-"	padding-left: 2px;\n"
-"	border-bottom: 1px dashed #bcbcbc;\n"
-"}\n"
-".keyentrywe {\n"
-"	background-color: #f0f090;\n"
-"	font-size: 10px;\n"
-"	padding-left: 2px;\n"
-"	border-bottom: 1px dashed #bcbcbc;\n"
-"}\n"
-".valueentry {\n"
-"	font-size: 10px;\n"
-"	padding-left: 2px;\n"
-"	color: #905d14;\n"
-"	border-bottom: 1px dashed #f6c074;\n"
-"}\n"
-".credits {\n"
-"	font-size: 12px;\n"
-"	font-weight: bold;\n"
-"}\n"
-".maintable {\n"
-"	border-style: solid;\n"
-"	border-color: #0b4b5b;\n"
-"	border-width: 1px;\n"
-"}\n"
-"</style>\n"
-"</head>\n"
-"<body><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"maintable\">\n"
-	);
-}
-
-void om_html_print_footer(FILE *fp)
-{
-	fprintf(fp, "</table></body></html>\n");
-}
-
-void om_html_print_title(FILE *fp, char *title)
-{
-	fprintf(fp, "<tr><td align=\"center\" class=\"title\" colspan=\"3\"><a name=\"%s\"></a>", title);
-	om_html_entities(fp, title);
-	fprintf(fp, "</td></tr>\n");
-}
-
-void om_html_print_subtitle(FILE *fp, char *subtitle)
-{
-	fprintf(fp, "<tr><td align=\"center\" class=\"subtitle\" colspan=\"3\">");
-	om_html_entities(fp, subtitle);
-	fprintf(fp, "</td></tr>\n");
-}
-
-void om_html_print_numkey_info(FILE *fp, char *key, int val)
-{
-	fprintf(fp, "<tr><td align=\"left\" colspan=\"3\" class=\"info\">");
-	om_html_entities(fp, key);
-	fprintf(fp, " %d", val);
-	fprintf(fp, "</td></tr>\n");
-}
-
-void om_html_print_keykey_entry(FILE *fp, char *key1, char *key2, int num)
-{
-	fprintf(fp, "<tr><td align=\"left\" class=\"keyentry\">");
-	fprintf(fp, "%d)", num);
-	fprintf(fp, "<td align=\"left\" class=\"valueentry\">");
-	om_html_entities(fp, key1);
-	fprintf(fp, "</td><td align=\"left\" class=\"keyentry\">");
-	if (!strncmp(key2, "http://", 7)) {
-		fprintf(fp, "<a class=\"url\" href=\"%s\">", key2);
-		om_html_entities(fp, key2);
-		fprintf(fp, "</a>");
-	} else {
-		om_html_entities(fp, key2);
-	}
-	fprintf(fp, "</td></tr>\n");
-}
-
-void om_html_print_numkey_entry(FILE *fp, char *key, int val, char *link,
-		int num)
-{
-	fprintf(fp, "<tr><td align=\"left\" class=\"keyentry\">");
-	fprintf(fp, "%d)", num);
-	fprintf(fp, "<td align=\"left\" class=\"valueentry\">");
-	fprintf(fp, "%d", val);
-	fprintf(fp, "</td><td align=\"left\" class=\"keyentry\">");
-	if (link != NULL) {
-		fprintf(fp, "<a class=\"url\" href=\"%s\">", link);
-		om_html_entities(fp, key);
-		fprintf(fp, "</a>");
-	} else if (!strncmp(key, "http://", 7)) {
-		fprintf(fp, "<a class=\"url\" href=\"%s\">", key);
-		om_html_entities(fp, key);
-		fprintf(fp, "</a>");
-	} else {
-		om_html_entities(fp, key);
-	}
-	fprintf(fp, "</td></tr>\n");
-}
-
-void om_html_print_bar(FILE *fp, int l, char *leftclass, char *rightclass)
-{
-	fprintf(fp, "<table cellpadding=\"0\" cellspacing=\"0\" width=\"400\" border=\"0\">\n");
-	fprintf(fp, "<tr><td align=\"center\" class=\"%s\" width=\"%d%%\">%s</td>\n", leftclass, l, l ? "&nbsp;" : "");
-	fprintf(fp, "<td align=\"center\" class=\"%s\" width=\"%d%%\">%s</td></tr>\n", rightclass, 100-l, (l!=100) ? "&nbsp;" : "");
-	fprintf(fp, "</table>\n");
-}
-
-void om_html_print_numkeybar_entry(FILE *fp, char *key, int max, int tot, int this)
-{
-	int l, weekend;
-	float p;
-
-	if (tot == 0) tot++;
-	if (max == 0) max++;
-	l = ((float)(100*this))/max;
-	p = ((float)(100*this))/tot;
-	weekend = vi_is_weekend(key, Config_time_delta);
-
-	if (weekend)
-		fprintf(fp, "<tr><td align=\"left\" class=\"keyentrywe\">");
-	else
-		fprintf(fp, "<tr><td align=\"left\" class=\"keyentry\">");
-	om_html_entities(fp, key);
-	fprintf(fp, "&nbsp;&nbsp;&nbsp;</td><td align=\"left\" class=\"valueentry\">");
-	fprintf(fp, "%d (%02.1f%%)", this, p);
-	fprintf(fp, "</td><td align=\"left\" class=\"bar\">");
-	om_html_print_bar(fp, l, "barfill", "barempty");
-	fprintf(fp, "</td></tr>\n");
-}
-
-void om_html_print_numkeycomparativebar_entry(FILE *fp, char *key, int tot, int this)
-{
-	int l, weekend;
-	float p;
-
-	if (tot == 0) tot++;
-	p = ((float)(100*this))/tot;
-	l = (int) p;
-	weekend = vi_is_weekend(key, Config_time_delta);
-
-	if (weekend)
-		fprintf(fp, "<tr><td align=\"left\" class=\"keyentrywe\">");
-	else
-		fprintf(fp, "<tr><td align=\"left\" class=\"keyentry\">");
-	om_html_entities(fp, key);
-	fprintf(fp, "&nbsp;&nbsp;&nbsp;</td><td align=\"left\" class=\"valueentry\">");
-	fprintf(fp, "%d (%02.1f%%)", this, p);
-	fprintf(fp, "</td><td align=\"left\" class=\"bar\">");
-	om_html_print_bar(fp, l, "barleft", "barright");
-	fprintf(fp, "</td></tr>\n");
-}
-
-void om_html_print_bidimentional_map(FILE *fp, int xlen, int ylen,
-			char **xlabel, char **ylabel, int *value)
-{
-	int x, y, l, max = 0;
-
-	/* Get the max value */
-	l = xlen*ylen;
-	for (x = 0; x < l; x++)
-		if (max < value[x])
-			max = value[x];
-	if (max == 0) max++; /* avoid division by zero */
-	/* print the map */
-	fprintf(fp, "<tr><td colspan=\"3\" align=\"center\">");
-	fprintf(fp, "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
-	for (y = 0; y < ylen; y++) {
-		fprintf(fp, "<tr>");
-		fprintf(fp, "<td class=\"valueentry\">%s</td>", ylabel[y]);
-		for (x = 0; x < xlen; x++) {
-			int r, g, b;
-			int val = value[(y*xlen)+x];
-
-			r = (0xAA*val)/max;
-			g = (0xBB*val)/max;
-			b = (0xFF*val)/max;
-			fprintf(fp, "<td style=\"background-color: #%02X%02X%02X;\">&nbsp;</td>\n", r, g, b);
-		}
-		fprintf(fp, "</tr>\n");
-	}
-	fprintf(fp, "<tr><td>&nbsp;</td>");
-	for (x = 0; x < xlen; x++) {
-		fprintf(fp, "<td class=\"keyentry\">%s</td>", xlabel[x]);
-	}
-	fprintf(fp, "</tr></table></td></tr>");
-}
-
-void om_html_print_hline(FILE *fp)
-{
-	fprintf(fp, "<tr><td colspan=\"3\">&nbsp;</td></tr>");
-}
-
-void om_html_print_credits(FILE *fp)
-{
-	fprintf(fp, "<tr><td colspan=\"3\" align=\"center\" class=\"credits\">Statistics generated with <a href=\"http://www.hping.org/visitors\">VISITORS Web Log Analyzer</a> version %s\n</td></tr>", VI_VERSION_STR);
-}
-
-void om_html_print_report_link(FILE *fp, char *report)
-{
-	fprintf(fp, "<tr><td align=\"left\" class=\"reportlink\" colspan=\"3\"><a href=\"#%s\">", report);
-	om_html_entities(fp, report);
-	fprintf(fp, "</a></td></tr>\n");
-	return;
-}
-
-struct outputmodule OutputModuleHtml = {
-	om_html_print_header,
-	om_html_print_footer,
-	om_html_print_title,
-	om_html_print_subtitle,
-	om_html_print_numkey_info,
-	om_html_print_keykey_entry,
-	om_html_print_numkey_entry,
-	om_html_print_numkeybar_entry,
-	om_html_print_numkeycomparativebar_entry,
-	om_html_print_bidimentional_map,
-	om_html_print_hline,
-	om_html_print_credits,
-	om_html_print_report_link,
-};
-
 
 /* ---------------------------------- output -------------------------------- */
 void vi_print_statistics(struct vih *vih)
@@ -2231,7 +1706,7 @@ void vi_print_hours_report(FILE *fp, struct vih *vih)
 	for (i = 0; i < 24; i++) {
 		char buf[8];
 		sprintf(buf, "%02d", i);
-		Output->print_numkeybar_entry(fp, buf, max, tot, vih->hour[i]);
+		Output->print_numkeybar_entry(fp, buf, max, tot, vih->hour[i], Config_time_delta);
 	}
 }
 
@@ -2246,7 +1721,7 @@ void vi_print_weekdays_report(FILE *fp, struct vih *vih)
 	Output->print_title(fp, "Weekdays distribution");
 	Output->print_subtitle(fp, "Percentage of hits in every day of the week");
 	for (i = 0; i < 7; i++) {
-		Output->print_numkeybar_entry(fp, vi_wdname[i], max, tot, vih->weekday[i]);
+		Output->print_numkeybar_entry(fp, vi_wdname[i], max, tot, vih->weekday[i], Config_time_delta);
 	}
 }
 
@@ -2350,7 +1825,7 @@ void vi_print_visits_report(FILE *fp, struct vih *vih)
 			ht_used(&vih->visitors));
 	Output->print_numkey_info(fp, "Different days in logfile",
 			ht_used(&vih->date));
-	
+
 	if ((table = ht_get_array(&vih->date)) == NULL) {
 		fprintf(stderr, "Out Of Memory in print_visits_report()\n");
 		return;
@@ -2365,7 +1840,7 @@ void vi_print_visits_report(FILE *fp, struct vih *vih)
 	for (i = 0; i < days; i++) {
 		char *key = table[i*2];
 		long value = (long) table[(i*2)+1];
-		Output->print_numkeybar_entry(fp, key, max, tot, value);
+		Output->print_numkeybar_entry(fp, key, max, tot, value, Config_time_delta);
 	}
 	free(table);
 		Output->print_hline(fp);
@@ -2380,7 +1855,7 @@ void vi_print_visits_report(FILE *fp, struct vih *vih)
 			ht_used(&vih->visitors));
 	Output->print_numkey_info(fp, "Different months in logfile",
 			ht_used(&vih->month));
-	
+
 	if ((table = ht_get_array(&vih->month)) == NULL) {
 		fprintf(stderr, "Out Of Memory in print_visits_report()\n");
 		return;
@@ -2395,7 +1870,7 @@ void vi_print_visits_report(FILE *fp, struct vih *vih)
 	for (i = 0; i < months; i++) {
 		char *key = table[i*2];
 		long value = (long) table[(i*2)+1];
-		Output->print_numkeybar_entry(fp, key, max, tot, value);
+		Output->print_numkeybar_entry(fp, key, max, tot, value, Config_time_delta);
 	}
 	free(table);
 }
@@ -2414,7 +1889,7 @@ void vi_print_googlevisits_report(FILE *fp, struct vih *vih)
 			ht_used(&vih->googlevisitors));
 	Output->print_numkey_info(fp, "Different days in logfile",
 			ht_used(&vih->date));
-	
+
 	if ((table = ht_get_array(&vih->date)) == NULL) {
 		fprintf(stderr, "Out Of Memory in print_visits_report()\n");
 		return;
@@ -2426,7 +1901,7 @@ void vi_print_googlevisits_report(FILE *fp, struct vih *vih)
 		long googlevalue;
 
 		googlevalue = vi_counter_val(&vih->googledate, key);
-		Output->print_numkeycomparativebar_entry(fp, key, value, googlevalue);
+		Output->print_numkeycomparativebar_entry(fp, key, value, googlevalue, Config_time_delta);
 	}
 	free(table);
 		Output->print_hline(fp);
@@ -2442,7 +1917,7 @@ void vi_print_googlevisits_report(FILE *fp, struct vih *vih)
 			ht_used(&vih->googlevisitors));
 	Output->print_numkey_info(fp, "Different months in logfile",
 			ht_used(&vih->month));
-	
+
 	if ((table = ht_get_array(&vih->month)) == NULL) {
 		fprintf(stderr, "Out Of Memory in print_visits_report()\n");
 		return;
@@ -2454,7 +1929,7 @@ void vi_print_googlevisits_report(FILE *fp, struct vih *vih)
 		long googlevalue;
 
 		googlevalue = vi_counter_val(&vih->googlemonth, key);
-		Output->print_numkeycomparativebar_entry(fp, key, value, googlevalue);
+		Output->print_numkeycomparativebar_entry(fp, key, value, googlevalue, Config_time_delta);
 	}
 	free(table);
 }
@@ -2514,9 +1989,9 @@ void vi_print_generic_keyvalbar_report(FILE *fp, char *title, char *subtitle,
 		long value = (long) table[(i*2)+1];
 		if (i >= maxlines) break;
 		if (key[0] == '\0')
-			Output->print_numkeybar_entry(fp, "none", max, tot, value);
+			Output->print_numkeybar_entry(fp, "none", max, tot, value, Config_time_delta);
 		else
-			Output->print_numkeybar_entry(fp, key, max, tot, value);
+			Output->print_numkeybar_entry(fp, key, max, tot, value, Config_time_delta);
 	}
 	free(table);
 }

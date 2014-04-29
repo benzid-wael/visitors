@@ -1,3 +1,11 @@
+-> Visitors 0.7.1 Released (29 April 2014)
+* Author: Wael BEN ZID ELGUEBSI <benzid.wael@hotmail.fr>
+
+28Apr2014 - Moved Output modules definitions & implementations in seperate
+files
+25Apr2014 - Move visitors settings and dete utils functions in seperate files
+25Apr2014 - Passing time delta as parameter to date utils functions
+
 -> Visitors 0.7 Released (30 March 2006)
 
 30Mar2005 - Added screen resolution and color depth report (via Javascript) see the README file for more info.

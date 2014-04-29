@@ -96,7 +96,7 @@ struct greppat {
 	char *pattern;
 };
 
-/* ---------------------- global configuration parameters ------------------- */
+/* ------------------- global configuration parameters ---------------- */
 int Config_debug = 0;
 int Config_max_referers = 20;
 int Config_max_referers_age = 20;
@@ -150,17 +150,17 @@ struct vistring Config_prefix[VI_PREFIXES_MAX];
 struct greppat Config_grep_pattern[VI_GREP_PATTERNS_MAX];
 int Config_grep_pattern_num = 0;	/* number of set patterns */
 
-/*----------------------------------- Tables ---------------------------------*/
+/*--------------------------------- Tables -------------------------------*/
 static char *vi_wdname[7] = {"Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"};
 #if 0
 static int vi_monthdays[12] = {31, 29, 31, 30, 31, 30 , 31, 31, 30, 31, 30, 31};
 #endif
 
-/* -------------------------------- prototypes ------------------------------ */
+/* ------------------------------ prototypes ---------------------------- */
 void vi_clear_error(struct vih *vih);
 void vi_tail(int filec, char **filev);
 
-/*------------------- Options parsing help functions ------------------------ */
+/*----------------- Options parsing help functions ---------------------- */
 void ConfigAddGrepPattern(char *pattern, int type)
 {
 	char *s;
@@ -180,7 +180,7 @@ void ConfigAddGrepPattern(char *pattern, int type)
 	Config_grep_pattern_num++;
 }
 
-/*------------------------------ support functions -------------------------- */
+/*---------------------------- support functions ------------------------ */
 /* Returns non-zero if the link seems like a google link, zero otherwise.
  * Note that this function only checks for a prefix of www.google.<something>.
  * so may be fooled. */
@@ -431,54 +431,54 @@ void vi_strtolower(char *s)
  * Originally under the BSD license. */
 int vi_strlcpy(char *dst, char *src, int siz)
 {
-		char *d = dst;
-		const char *s = src;
-		int n = siz;
+	char *d = dst;
+	const char *s = src;
+	int n = siz;
 
-		/* Copy as many bytes as will fit */
-		if (n != 0 && --n != 0) {
-				do {
-						if ((*d++ = *s++) == 0)
-								break;
-				} while (--n != 0);
-		}
-		/* Not enough room in dst, add NUL and traverse rest of src */
-		if (n == 0) {
-				if (siz != 0)
-						*d = '\0';			  /* NUL-terminate dst */
-				while (*s++)
-						;
-		}
-		return(s - src - 1);	/* count does not include NUL */
+	/* Copy as many bytes as will fit */
+	if (n != 0 && --n != 0) {
+		do {
+			if ((*d++ = *s++) == 0)
+				break;
+		} while (--n != 0);
+	}
+	/* Not enough room in dst, add NUL and traverse rest of src */
+	if (n == 0) {
+			if (siz != 0)
+					*d = '\0';  /* NUL-terminate dst */
+			while (*s++)
+					;
+	}
+	return(s - src - 1);	/* count does not include NUL */
 }
 
 int vi_strlcat(char *dst, const char *src, int siz)
 {
-		char *d = dst;
-		const char *s = src;
-		size_t n = siz;
-		size_t dlen;
+	char *d = dst;
+	const char *s = src;
+	size_t n = siz;
+	size_t dlen;
 
-		/* Find the end of dst and adjust bytes left but don't go past end */
-		while (n-- != 0 && *d != '\0'){
-			d++;
-		}
-		dlen = d - dst;
-		n = siz - dlen;
+	/* Find the end of dst and adjust bytes left but don't go past end */
+	while (n-- != 0 && *d != '\0'){
+		d++;
+	}
+	dlen = d - dst;
+	n = siz - dlen;
 
-		if (n == 0){
-			return(dlen + strlen(s));
+	if (n == 0){
+		return(dlen + strlen(s));
+	}
+	while (*s != '\0') {
+		if (n != 1) {
+			*d++ = *s;
+			n--;
 		}
-		while (*s != '\0') {
-			if (n != 1) {
-				*d++ = *s;
-				n--;
-			}
-			s++;
-		}
-		*d = '\0';
+		s++;
+	}
+	*d = '\0';
 
-		return(dlen + (s - src));	   /* count does not include NUL */
+	return(dlen + (s - src));   /* count does not include NUL */
 }
 
 /* Returns non-zero if the url matches one of the keywords in
@@ -503,7 +503,7 @@ int vi_match_len(const char *pattern, int patternLen,
 		const char *string, int stringLen, int nocase)
 {
 	while(patternLen) {
-		switch(pattern[0]) {
+	  switch(pattern[0]) {
 		case '*':
 			while (pattern[1] == '*') {
 				pattern++;
@@ -605,16 +605,16 @@ int vi_match_len(const char *pattern, int patternLen,
 			string++;
 			stringLen--;
 			break;
-		}
-		pattern++;
-		patternLen--;
-		if (stringLen == 0) {
-			while(*pattern == '*') {
-				pattern++;
-				patternLen--;
-			}
-			break;
-		}
+	  }
+	  pattern++;
+	  patternLen--;
+	  if (stringLen == 0) {
+	    while(*pattern == '*') {
+	      pattern++;
+	      patternLen--;
+	    }
+	    break;
+	  }
 	}
 	if (patternLen == 0 && stringLen == 0)
 		return 1;
@@ -824,6 +824,7 @@ int vi_replace(struct hashtable *ht, char *key, char *value)
 	if (ht_replace(ht, k, v) != HT_OK)
 		goto err;
 	return 0;
+
 err:
 	if (k) free(k);
 	if (v) free(v);
@@ -863,6 +864,7 @@ int vi_replace_time(struct hashtable *ht, char *key, time_t time, int ifolder)
 		}
 	}
 	return 0;
+
 err:
 	if (k) free(k);
 	return 1;
@@ -2869,7 +2871,7 @@ int main(int argc, char **argv)
 			Config_process_google_keyphrases_age = 1;
 			break;
 		case OPT_GOOGLEHUMANLANGUAGE:
-						Config_process_google_keyphrases = 1;
+			Config_process_google_keyphrases = 1;
 			Config_process_google_human_language = 1;
 			break;
 		case OPT_TLD:
@@ -2905,7 +2907,7 @@ int main(int argc, char **argv)
 			Config_process_error404 = 1;
 			Config_process_pageviews = 1;
 			Config_process_robots = 1;
-						Config_process_screen_info = 1;
+			Config_process_screen_info = 1;
 			break;
 		case OPT_PREFIX:
 			if (Config_prefix_num < VI_PREFIXES_MAX) {
@@ -2989,24 +2991,24 @@ int main(int argc, char **argv)
 		case OPT_TIMEDELTA:
 			Config_time_delta = atoi(ago_optarg);
 			break;
-				case OPT_FILTERSPAM:
-						Config_filter_spam = 1;
-						break;
-				case OPT_GREP:
-						ConfigAddGrepPattern(ago_optarg, VI_PATTERNTYPE_GREP);
-						break;
-				case OPT_EXCLUDE:
-						ConfigAddGrepPattern(ago_optarg, VI_PATTERNTYPE_EXCLUDE);
-						break;
-				case OPT_IGNORE404:
-						Config_ignore_404 = 1;
-						break;
-				case OPT_DEBUG:
-						Config_debug = 1;
-						break;
-				case OPT_SCREENINFO:
-						Config_process_screen_info = 1;
-						break;
+		case OPT_FILTERSPAM:
+			Config_filter_spam = 1;
+			break;
+		case OPT_GREP:
+			ConfigAddGrepPattern(ago_optarg, VI_PATTERNTYPE_GREP);
+			break;
+		case OPT_EXCLUDE:
+			ConfigAddGrepPattern(ago_optarg, VI_PATTERNTYPE_EXCLUDE);
+			break;
+		case OPT_IGNORE404:
+			Config_ignore_404 = 1;
+			break;
+		case OPT_DEBUG:
+			Config_debug = 1;
+			break;
+		case OPT_SCREENINFO:
+			Config_process_screen_info = 1;
+			break;
 		case AGO_ALONE:
 			if (filenamec < VI_FILENAMES_MAX)
 				filenames[filenamec++] = ago_optarg;
@@ -3031,11 +3033,11 @@ int main(int argc, char **argv)
 		fprintf(stderr, "At least one prefix must be specified (using --prefix) for web trails\nExample: --prefix http://your.site.org\n");
 		exit(1);
 	}
-		/* If screen-info is enabled, error 404 must be too, auto-enable it. */
-		if (Config_process_screen_info && !Config_process_error404) {
-			fprintf(stderr, "Note: 404 error processing enabled for screen-info report\n");
-			Config_process_error404 = 1;
-		}
+	/* If screen-info is enabled, error 404 must be too, auto-enable it. */
+	if (Config_process_screen_info && !Config_process_error404) {
+		fprintf(stderr, "Note: 404 error processing enabled for screen-info report\n");
+		Config_process_error404 = 1;
+	}
 	/* If stream-mode is enabled, --output-file should be specified. */
 	if (Config_stream_mode && Config_output_file == NULL) {
 		fprintf(stderr, "--stream requires --output-file\n");

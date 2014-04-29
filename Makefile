@@ -1,5 +1,5 @@
-# Makefile for visitors
-# Copyright (C) 2004 Salvatore Sanfilippo <antirez@invece.org>
+# Makefile for xvisitors
+# Copyright (C) 2014 Wael BEN ZID <benzid.wael@hotmail.fr>
 # All Rights Reserved
 # Under the GPL license version 2
 
@@ -8,7 +8,7 @@ CFLAGS?= -O2 -Wall -W
 CCOPT= $(CFLAGS)
 
 OBJ = $(patsubst %.c,%.o,$(wildcard *.c))
-PRGNAME = visitors
+PRGNAME = xvisitors
 
 all: $(PRGNAME)
 

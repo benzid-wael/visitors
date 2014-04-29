@@ -1,6 +1,6 @@
-/* visitors -- very fast web logs analyzer.
+/* xvisitors -- very fast web logs analyzer.
  *
- * Copyright (C) 2004-2006 Salvatore Sanfilippo <antirez@invece.org>
+ * Copyright (C) 2014 Wael BEN ZID <benzid.wael@hotmail.fr>
  * All Rights Reserved.
  *
  * This software is released under the terms of the GPL license version 2.

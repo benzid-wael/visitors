@@ -1,12 +1,12 @@
-.TH VISITORS "1" "April 2005" "Visitors 0.7"
+.TH XVISITORS "1" "April 2014" "XVisitors 0.7.1"
 .SH NAME
-visitors \- a fast web server log analyzer
+xvisitors \- a fast web server log analyzer
 .SH SYNOPSIS
-.B visitors
+.B xvisitors
 [\fIoptions] \fI<filename> [\fI<filename> ...]
 .SH DESCRIPTION
 .PP
-.I Visitors
+.I XVisitors
 generates access statistics from specified web log files.
 
 The resulting reports contain a number of useful informations and
@@ -58,8 +58,8 @@ first entry in the log, referers and requests MUST be included between
 double quote chars. Out of the box Apache log file will work without
 problems.
 
-It's possible to use Visitors with IIS log files converting them using
-the iis2apache.pl utility distributed with Visitors (The utility is
+It's possible to use XVisitors with IIS log files converting them using
+the iis2apache.pl utility distributed with XVisitors (The utility is
 the same you can find at http://www.jammed.com/~jwa/hacks/ and
 is distributed under the GPL license).
 
@@ -292,7 +292,7 @@ Set the max number of entries in the domains report.
 .PP
 .TP 8
 .BI "\-P \-\-prefix" " number"
-Prefixes specify to visitors how a link should look like to be
+Prefixes specify to xvisitors how a link should look like to be
 classified as internal to your site. This option is required for
 .B --trails
 and will also have the nice effect to avoid that internal links are

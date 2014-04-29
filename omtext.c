@@ -1,4 +1,13 @@
-/* ---------------------------- text output module -------------------------- */
+/* xvisitors -- very fast web logs analyzer.
+ *
+ * Copyright (C) 2014 Wael BEN ZID <benzid.wael@hotmail.fr>
+ * All Rights Reserved.
+ *
+ * This software is released under the terms of the GPL license version 2.
+ * Read the COPYING file in this distribution for more details. */
+
+
+/* -------------------------- text output module ------------------------ */
 
 #include <stdio.h>
 #include <stdlib.h>

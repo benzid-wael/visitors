@@ -21,3 +21,4 @@ $(PRGNAME): $(OBJ)
 clean:
 	rm -rf $(PRGNAME) *.o
 	find -name '*~' -delete
+	find -name '*.sw[po]' -delete

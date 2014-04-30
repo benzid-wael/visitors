@@ -23,6 +23,7 @@
 #include "date_utils.h"
 #include "omtext.h"
 #include "omhtml.h"
+#include "omjson.h"
 
 
 /*------------------------------- data structures ----------------------------*/
@@ -2943,6 +2944,8 @@ int main(int argc, char **argv)
 		case OPT_OUTPUT:
 			if (!strcasecmp(ago_optarg, "text"))
 				Output = &OutputModuleText;
+			else if (!strcasecmp(ago_optarg, "json"))
+				Output = &OutputModuleJson;
 			else if (!strcasecmp(ago_optarg, "html"))
 				Output = &OutputModuleHtml;
 			else {

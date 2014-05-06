@@ -11,6 +11,8 @@
 
 #include "om.h"
 
+void init_omjson();
+
 void om_json_print_header(FILE *fp);
 void om_json_print_footer(FILE *fp);
 void om_json_print_title(FILE *fp, char *title);

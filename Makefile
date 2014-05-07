@@ -6,7 +6,6 @@
 DEBUG?= -g
 CFLAGS?= -O2 -Wall -W $(shell pkg-config --cflags glib-2.0)
 LFLAGS ?= $(shell pkg-config --libs glib-2.0)
-CCOPT= $(CFLAGS)
 
 
 OBJ = $(patsubst %.c,%.o,$(wildcard *.c))
@@ -15,10 +14,10 @@ PRGNAME = xvisitors
 all: $(PRGNAME)
 
 $(PRGNAME): $(OBJ)
-	$(CC) -o $(PRGNAME) $(CCOPT) $(LFLAGS) $(DEBUG) $(OBJ)
+	$(CC) -o $(PRGNAME) $(CFLAGS) $(LFLAGS) $(DEBUG) $(OBJ)
 
 .c.o:
-	$(CC) -c $(CCOPT) $(DEBUG) $(COMPILE_TIME) $<
+	$(CC) -c $(CFLAGS) $(DEBUG) $(COMPILE_TIME) $<
 
 clean:
 	rm -rf $(PRGNAME) *.o

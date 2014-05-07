@@ -3,10 +3,11 @@
 # All Rights Reserved
 # Under the GPL license version 2
 
+.PHONY: all clean
+
 DEBUG?= -g
 CFLAGS?= -O2 -Wall -W $(shell pkg-config --cflags glib-2.0)
 LFLAGS ?= $(shell pkg-config --libs glib-2.0)
-
 
 OBJ = $(patsubst %.c,%.o,$(wildcard *.c))
 PRGNAME = xvisitors

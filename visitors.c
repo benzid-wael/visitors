@@ -1,6 +1,6 @@
-/* visitors -- very fast web logs analyzer.
+/* xvisitors -- very fast web logs analyzer.
  *
- * Copyright (C) 2004-2006 Salvatore Sanfilippo <antirez@invece.org>
+ * Copyright (C) 2014 Wael BEN ZID <benzid.wael@hotmail.fr>
  * All Rights Reserved.
  *
  * This software is released under the terms of the GPL license version 2.
@@ -23,6 +23,7 @@
 #include "date_utils.h"
 #include "omtext.h"
 #include "omhtml.h"
+#include "omjson.h"
 
 
 /*------------------------------- data structures ----------------------------*/
@@ -1710,6 +1711,7 @@ void vi_print_hours_report(FILE *fp, struct vih *vih)
 		sprintf(buf, "%02d", i);
 		Output->print_numkeybar_entry(fp, buf, max, tot, vih->hour[i], Config_time_delta);
 	}
+	Output->close_title(fp);
 }
 
 void vi_print_weekdays_report(FILE *fp, struct vih *vih)
@@ -1725,6 +1727,7 @@ void vi_print_weekdays_report(FILE *fp, struct vih *vih)
 	for (i = 0; i < 7; i++) {
 		Output->print_numkeybar_entry(fp, vi_wdname[i], max, tot, vih->weekday[i], Config_time_delta);
 	}
+	Output->close_title(fp);
 }
 
 /* Generic function for qsort(3) called to sort a table.
@@ -1845,7 +1848,8 @@ void vi_print_visits_report(FILE *fp, struct vih *vih)
 		Output->print_numkeybar_entry(fp, key, max, tot, value, Config_time_delta);
 	}
 	free(table);
-		Output->print_hline(fp);
+	Output->close_title(fp);
+	Output->print_hline(fp);
 
 	/* Montly */
 	if (Config_process_monthly_visitors == 0) return;
@@ -1874,6 +1878,7 @@ void vi_print_visits_report(FILE *fp, struct vih *vih)
 		long value = (long) table[(i*2)+1];
 		Output->print_numkeybar_entry(fp, key, max, tot, value, Config_time_delta);
 	}
+	Output->close_title(fp);
 	free(table);
 }
 
@@ -1906,7 +1911,8 @@ void vi_print_googlevisits_report(FILE *fp, struct vih *vih)
 		Output->print_numkeycomparativebar_entry(fp, key, value, googlevalue, Config_time_delta);
 	}
 	free(table);
-		Output->print_hline(fp);
+	Output->close_title(fp);
+	Output->print_hline(fp);
 
 	/* Montly */
 	if (Config_process_monthly_visitors == 0) return;
@@ -1933,6 +1939,7 @@ void vi_print_googlevisits_report(FILE *fp, struct vih *vih)
 		googlevalue = vi_counter_val(&vih->googlemonth, key);
 		Output->print_numkeycomparativebar_entry(fp, key, value, googlevalue, Config_time_delta);
 	}
+	Output->close_title(fp);
 	free(table);
 }
 
@@ -1962,6 +1969,7 @@ void vi_print_generic_keyval_report(FILE *fp, char *title, char *subtitle,
 		else
 			Output->print_numkey_entry(fp, key, value, NULL, i+1);
 	}
+	Output->close_title(fp);
 	free(table);
 }
 
@@ -1995,6 +2003,7 @@ void vi_print_generic_keyvalbar_report(FILE *fp, char *title, char *subtitle,
 		else
 			Output->print_numkeybar_entry(fp, key, max, tot, value, Config_time_delta);
 	}
+	Output->close_title(fp);
 	free(table);
 }
 
@@ -2041,6 +2050,7 @@ void vi_print_keyphrases_report(FILE *fp, char *title, char *subtitle,
 			Output->print_numkey_entry(fp, key, value, link, i+1);
 		}
 	}
+	Output->close_title(fp);
 	free(table);
 }
 
@@ -2221,6 +2231,7 @@ void vi_print_generic_keytime_report(FILE *fp, char *title, char *subtitle,
 					(url[0] == '\0') ? "none" : url, i+1);
 		}
 	}
+	Output->close_title(fp);
 	free(table);
 }
 
@@ -2317,6 +2328,7 @@ void vi_print_information_report(FILE *fp, struct vih *vih)
 	Output->print_numkey_info(fp, "Number of entries processed", vih->processed);
 	Output->print_numkey_info(fp, "Number of invalid entries", vih->invalid);
 	Output->print_numkey_info(fp, "Processing time in seconds", (vih->endt)-(vih->startt));
+	Output->close_title(fp);
 }
 
 void vi_print_report_links(FILE *fp)
@@ -2344,8 +2356,8 @@ void vi_print_report_links(FILE *fp)
 	"Google Keyphrases", &Config_process_google_keyphrases,
 	"Google Keyphrases by first time", &Config_process_google_keyphrases_age,
 	"Google Human Language", &Config_process_google_human_language,
-		"Screen resolution", &Config_process_screen_info,
-		"Screen color depth", &Config_process_screen_info,
+	"Screen resolution", &Config_process_screen_info,
+	"Screen color depth", &Config_process_screen_info,
 	"Web trails", &Config_process_web_trails,
 	"Weekday distribution", NULL,
 	"Hours distribution", NULL,
@@ -2364,6 +2376,7 @@ void vi_print_report_links(FILE *fp)
 		if (active)
 			Output->print_report_link(fp, (char*)l[i]);
 	}
+	Output->close_title(fp);
 }
 
 void vi_print_weekdayhour_map_report(FILE *fp, struct vih *vih)
@@ -2395,6 +2408,7 @@ void vi_print_weekdayhour_map_report(FILE *fp, struct vih *vih)
 	Output->print_numkey_info(fp, buf, hw[minj]);
 	Output->print_hline(fp);
 	Output->print_bidimentional_map(fp, 24, 7, xlabel, ylabel, hw);
+	Output->close_title(fp);
 }
 
 void vi_print_monthday_map_report(FILE *fp, struct vih *vih)
@@ -2430,6 +2444,7 @@ void vi_print_monthday_map_report(FILE *fp, struct vih *vih)
 	Output->print_numkey_info(fp, buf, md[minj]);
 	Output->print_hline(fp);
 	Output->print_bidimentional_map(fp, 31, 12, xlabel, ylabel, md);
+	Output->close_title(fp);
 }
 
 void vi_print_hline(FILE *fp)
@@ -2943,6 +2958,8 @@ int main(int argc, char **argv)
 		case OPT_OUTPUT:
 			if (!strcasecmp(ago_optarg, "text"))
 				Output = &OutputModuleText;
+			else if (!strcasecmp(ago_optarg, "json"))
+				Output = &OutputModuleJson;
 			else if (!strcasecmp(ago_optarg, "html"))
 				Output = &OutputModuleHtml;
 			else {

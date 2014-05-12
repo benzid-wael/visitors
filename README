@@ -12,6 +12,11 @@ please visit:
 or check the docs.html file in this directory
 for the reference documentation.
 
+DEPENDENCIES
+------------
+
+* libglib2.0-dev
+
 HOW TO COMPILE
 --------------
 
